@@ -1,9 +1,5 @@
 # 🚀 PerfAI Finance
 
-<p align="center">
-  <img src="./public/logo/perfai-finance-logo.png" alt="PerfAI Finance Logo" width="180"/>
-</p>
-
 <h3 align="center">
 AI-powered decision intelligence platform for financial institutions and microfinance organizations.
 </h3>
