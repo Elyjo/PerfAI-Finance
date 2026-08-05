@@ -1,158 +1,134 @@
-perfai-finance-frontend/
+# PerfAI Finance Frontend Structure
 
-├── src/
+## Architecture
+src/
+├── app/
+├── components/
+├── lib/
+├── hooks/
+├── types/
+└── utils/
+
+
+---
+
+## App Router (`src/app`)
+
+Gestion des routes Next.js.
+
+app/
+├── (auth)/
+│ ├── login/
+│ └── callback/
 │
-│ ├── app/
-│ │
-│ │ ├── (auth)/
-│ │ │ ├── login/
-│ │ │ │ └── page.tsx
-│ │ │ │
-│ │ │ ├── callback/
-│ │ │ │ └── route.ts
-│ │ │ │
-│ │ │ └── layout.tsx
-│ │ │
-│ │ │
-│ │ ├── (protected)/
-│ │ │ │
-│ │ │ ├── dashboard/
-│ │ │ │ └── page.tsx
-│ │ │ │
-│ │ │ ├── clients/
-│ │ │ │ └── page.tsx
-│ │ │ │
-│ │ │ ├── credit-requests/
-│ │ │ │ └── page.tsx
-│ │ │ │
-│ │ │ ├── risk-analysis/
-│ │ │ │ └── page.tsx
-│ │ │ │
-│ │ │ └── layout.tsx
-│ │ │
-│ │ │
-│ │ ├── page.tsx
-│ │ └── globals.css
-│ │
-│ │
-│ ├── components/
-│ │
-│ │ ├── landing/
-│ │ │ ├── Hero.tsx
-│ │ │ ├── ProblemSection.tsx
-│ │ │ ├── SolutionSection.tsx
-│ │ │ ├── FeaturesSection.tsx
-│ │ │ ├── HowItWorks.tsx
-│ │ │ ├── CTASection.tsx
-│ │ │ └── Footer.tsx
-│ │ │
-│ │ │
-│ │ ├── dashboard/
-│ │ │ ├── DashboardNavbar.tsx
-│ │ │ ├── DashboardSidebar.tsx
-│ │ │ ├── AiAnalysisCard.tsx
-│ │ │ ├── SmartAlertsCard.tsx
-│ │ │ └── PerformanceChart.tsx
-│ │ │
-│ │ │
-│ │ ├── clients/
-│ │ │ ├── ClientTable.tsx
-│ │ │ ├── ClientCard.tsx
-│ │ │ ├── ClientDetails.tsx
-│ │ │ ├── ClientFormModal.tsx
-│ │ │ ├── AiClientInsights.tsx
-│ │ │ └── RecentClientActivityCard.tsx
-│ │ │
-│ │ │
-│ │ ├── credit/
-│ │ │ ├── CreditRequestsTable.tsx
-│ │ │ ├── CreditRequestFormModal.tsx
-│ │ │ ├── CreditStatusBadge.tsx
-│ │ │ ├── CreditDetails.tsx
-│ │ │ └── RiskLevelBadge.tsx
-│ │ │
-│ │ │
-│ │ ├── analysis/
-│ │ │ ├── RiskScore.tsx
-│ │ │ ├── RiskIndicator.tsx
-│ │ │ ├── AiRiskRecommendation.tsx
-│ │ │ └── RiskAnalysisResult.tsx
-│ │ │
-│ │ │
-│ │ └── shared/
-│ │ ├── KpiCard.tsx
-│ │ ├── Button.tsx
-│ │ ├── Modal.tsx
-│ │ ├── EmptyState.tsx
-│ │ ├── Loading.tsx
-│ │ └── DataTable.tsx
-│ │
-│ │
-│ ├── lib/
-│ │ ├── supabase.ts
-│ │ ├── utils.ts
-│ │ └── constants.ts
-│ │
-│ │
-│ ├── hooks/
-│ │ ├── useAuth.ts
-│ │ ├── useClients.ts
-│ │ ├── useCreditRequests.ts
-│ │ └── useRiskAnalysis.ts
-│ │
-│ │
-│ ├── types/
-│ │ ├── client.ts
-│ │ ├── credit.ts
-│ │ ├── analysis.ts
-│ │ └── alert.ts
-│ │
-│ │
-│ └── utils/
-│ └── formatters.ts
-│
-│
-├── public/
-│ ├── logo/
-│ └── images/
-│
-│
-├── .env.example
-├── package.json
-└── README.md
+└── (protected)/
+├── dashboard/
+├── clients/
+├── credit-requests/
+└── risk-analysis/
 
 
-### Notes architecture :
+- `(auth)` : routes accessibles avant authentification.
+- `(protected)` : espace sécurisé réservé aux agents financiers.
 
-```md
-## Architecture Notes
+---
 
-### Removed modules
+## Components (`src/components`)
 
-- Reports:
-  - Removed because it belongs to PerfAI employee performance management.
-  - Financial reporting is handled through credit requests and risk analysis.
+Les composants UI sont organisés par domaine métier.
 
-- Alerts:
-  - Removed as a dedicated page.
-  - AI alerts are now contextual and displayed inside:
-    - Dashboard
-    - Client analysis
-    - Credit requests
-    - Risk analysis
+### Dashboard
 
-- Settings:
-  - Postponed for future versions.
-  - Not required for MVP/hackathon.
+Composants liés à la vue globale :
+dashboard/
+├── DashboardNavbar.tsx
+├── DashboardSidebar.tsx
+├── PerformanceChart.tsx
+├── AiAnalysisCard.tsx
+└── SmartAlertsCard.tsx
 
 
-## Current MVP Workflow
+### Clients
 
-1. Agent creates a client profile.
-2. Agent records a credit request.
-3. AI analyzes financial risk.
-4. System provides:
-   - Risk score
-   - Risk indicators
-   - AI recommendations
-   - Decision support.
+Gestion des clients :
+clients/
+├── ClientTable.tsx
+├── ClientFormModal.tsx
+├── ClientDetails.tsx
+└── AiClientInsights.tsx
+
+
+### Credit
+
+Gestion des demandes de crédit :
+credit/
+├── CreditRequestsTable.tsx
+├── CreditRequestFormModal.tsx
+├── CreditStatusBadge.tsx
+└── RiskLevelBadge.tsx
+
+
+### Analysis
+
+Analyse financière et scoring IA :
+analysis/
+├── RiskScore.tsx
+├── RiskIndicator.tsx
+├── AiRiskRecommendation.tsx
+└── RiskAnalysisResult.ts
+
+
+### Shared
+
+Composants réutilisables :
+shared/
+├── KpiCard.tsx
+├── Modal.tsx
+├── DataTable.tsx
+└── EmptyState.tsx
+
+
+---
+
+## Lib (`src/lib`)
+
+Configuration et services externes :
+lib/
+├── supabase.ts
+├── constants.ts
+└── utils.ts
+
+---
+
+## Hooks (`src/hooks`)
+
+Logique réutilisable côté client :
+hooks/
+├── useAuth.ts
+├── useClients.ts
+├── useCreditRequests.ts
+└── useRiskAnalysis.ts
+
+
+---
+
+## Types (`src/types`)
+
+Types TypeScript du domaine :
+types/
+├── client.ts
+├── credit.ts
+├── analysis.ts
+└── alert.ts
+
+
+---
+
+## Philosophie d'organisation
+
+PerfAI Finance suit une organisation **feature-based architecture** :
+
+- chaque domaine métier possède ses propres composants ;
+- les composants partagés restent dans `shared` ;
+- les pages restent responsables de l'assemblage ;
+- la logique métier est séparée de l'affichage.
