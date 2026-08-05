@@ -33,10 +33,6 @@ const menuItems = [
     icon: ShieldAlert,
   },
   {
-    label: "Rapports",
-    icon: FileText,
-  },
-  {
     label: "Alertes",
     icon: Bell,
   },
