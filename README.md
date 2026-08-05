@@ -201,13 +201,3 @@ The project is designed to be scalable and maintainable.
 <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white"/>
 </p>
 
-
----
-
-# 🗄️ Database Structure
-
-PerfAI Finance uses PostgreSQL through Supabase.
-
-## Users
-
-Stores platform users:
