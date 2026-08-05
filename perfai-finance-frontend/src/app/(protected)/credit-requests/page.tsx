@@ -62,25 +62,17 @@ export default function CreditRequestsPage() {
         </button>
       </div>
 
-      {/* Main table */}
-      <div
-        className="
-          mt-8
-        "
-      >
-        <CreditRequestTable />
-      </div>
-
-      {/* Activity */}
+      {/* Content */}
       <div
         className="
           mt-8
           grid
           gap-6
           lg:grid-cols-[2fr_1fr]
+          items-start
         "
       >
-        <div />
+        <CreditRequestTable />
 
         <RecentCreditActivityCard />
       </div>
