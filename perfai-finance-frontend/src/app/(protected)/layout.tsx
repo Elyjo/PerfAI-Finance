@@ -63,7 +63,7 @@ export default function ProtectedLayout({
         <DashboardNavbar />
       </div>
 
-      <div className="relative z-10 flex">
+      <div className="relative z-10 flex pt-16">
         <DashboardSidebar />
 
         <main
