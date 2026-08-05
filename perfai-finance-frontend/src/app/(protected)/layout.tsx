@@ -1,3 +1,4 @@
+import DashboardNavbar from "@/components/dashboard/DashboardNavbar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 
 export default function ProtectedLayout({
@@ -57,6 +58,10 @@ export default function ProtectedLayout({
           blur-[120px]
         "
       />
+
+      <div className="relative z-20">
+        <DashboardNavbar />
+      </div>
 
       <div className="relative z-10 flex">
         <DashboardSidebar />
