@@ -1,155 +1,151 @@
 # 🚀 PerfAI Finance
 
 <p align="center">
-  <img src="./public/logo/perfai-finance-logo.png" alt="PerfAI Finance Logo" width="180"/>
+  <img src="./public/logo/perfai-finance-logo.png" alt="Logo PerfAI Finance" width="180"/>
 </p>
 
 <h3 align="center">
-AI-powered decision intelligence platform for financial institutions and microfinance organizations.
+Plateforme intelligente d'aide à la décision basée sur l'intelligence artificielle pour les institutions financières et les organisations de microfinance.
 </h3>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-In%20Development-0B63C7?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Statut-En%20développement-0B63C7?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/Hackathon-CIF%20DigiCoop--WA%2B-1F2937?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/AI-Powered-8B5CF6?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/IA-Powered-8B5CF6?style=for-the-badge"/>
 </p>
 
+# 📌 À propos du projet
 
-## 📌 About The Project
+**PerfAI Finance** est une plateforme intelligente d'aide à la décision conçue pour accompagner les institutions financières et les organisations de microfinance dans l'évaluation des demandes de crédit, l'analyse des risques clients et la prise de décisions de financement plus rapides, transparentes et pertinentes.
 
-**PerfAI Finance** is an AI-powered decision support platform designed to help financial institutions and microfinance organizations evaluate credit applications, analyze customer risks, and make faster, smarter, and more transparent lending decisions.
+PerfAI Finance est une extension spécialisée de l'écosystème **PerfAI**, qui adapte son approche basée sur les données et l'intelligence artificielle aux problématiques du secteur financier.
 
-PerfAI Finance is a sector-specific extension of the **PerfAI ecosystem**, adapting its data-driven intelligence approach to address financial challenges.
+La plateforme ne remplace pas les experts financiers. Elle agit comme un assistant intelligent capable de transformer les données clients en recommandations exploitables afin d'améliorer la prise de décision humaine.
 
-The platform does not replace financial experts. It acts as an intelligent assistant capable of transforming customer data into actionable insights to support human decision-making.
+Les objectifs principaux sont :
 
-The main objective is to improve:
-
-- Credit evaluation processes;
-- Risk detection;
-- Financial inclusion;
-- Decision transparency.
-
+- Améliorer les processus d'évaluation de crédit ;
+- Détecter plus efficacement les risques ;
+- Favoriser l'inclusion financière ;
+- Apporter davantage de transparence dans les décisions.
 
 ---
 
-## 🌍 Context & Problem
+# 🌍 Contexte & Problématique
 
-Access to credit remains a major challenge for many individuals and small businesses, especially in emerging markets.
+L'accès au crédit reste un défi majeur pour de nombreux particuliers et petites entreprises, particulièrement dans les marchés émergents.
 
-Financial institutions and microfinance organizations often face difficulties when evaluating loan applications due to:
+Les institutions financières et les organisations de microfinance rencontrent souvent plusieurs difficultés lors de l'analyse des demandes :
 
-- Limited financial history;
-- Informal economic activities;
-- Lack of reliable customer information;
-- Manual and time-consuming analysis;
-- Difficulty identifying risky situations early.
+- Historique financier limité ;
+- Activités économiques informelles ;
+- Manque d'informations fiables sur les clients ;
+- Processus d'analyse manuel et chronophage ;
+- Difficulté à détecter rapidement les situations à risque.
 
-This creates two major problems:
+Cela entraîne deux problèmes importants :
 
-- Reliable customers may be rejected because of insufficient information;
-- Risky applications may be approved due to incomplete analysis.
+- Des clients fiables peuvent être refusés par manque d'informations suffisantes ;
+- Des demandes risquées peuvent être acceptées à cause d'une analyse incomplète.
 
-PerfAI Finance aims to solve this challenge by combining artificial intelligence, data analysis, and explainable recommendations.
-
-
----
-
-## 💡 Solution
-
-PerfAI Finance provides an intelligent workflow:
-
-
-The platform helps financial professionals answer:
-
-> "Is this customer eligible for a credit and why?"
-
-The final decision remains human-controlled, while AI provides meaningful insights.
-
+PerfAI Finance répond à cette problématique grâce à la combinaison de l'intelligence artificielle, de l'analyse des données et de recommandations explicables.
 
 ---
 
-# ✨ Main Features
+# 💡 Solution
 
-## 🔐 Authentication
+PerfAI Finance propose un workflow intelligent permettant aux professionnels financiers de mieux analyser les demandes de crédit.
 
-- Google OAuth authentication;
-- Secure user sessions;
-- Protected dashboard access;
-- User management.
+La plateforme aide les agents financiers à répondre à une question essentielle :
 
----
+> "Ce client est-il éligible à un crédit et pourquoi ?"
 
-## 👥 Customer Management
-
-Financial institutions can manage customer profiles:
-
-- Personal information;
-- Business activity;
-- Revenue information;
-- Business age;
-- Location;
-- Financial indicators.
+La décision finale reste toujours humaine. L'intelligence artificielle fournit uniquement des analyses, indicateurs et recommandations pour accompagner l'expert.
 
 ---
 
-## 💳 Credit Request Management
+# ✨ Fonctionnalités principales
 
-Manage credit applications:
+## 🔐 Authentification
 
-- Create credit requests;
-- Track application status;
-- Analyze eligibility;
-- View recommendations.
-
----
-
-## 🤖 AI Risk Analysis
-
-PerfAI Finance generates:
-
-- Credit score;
-- Risk level;
-- Recommendation;
-- Explainable insights.
-
-Example:
-
+- Authentification Google OAuth ;
+- Gestion sécurisée des sessions ;
+- Accès protégé au tableau de bord ;
+- Gestion des utilisateurs.
 
 ---
 
-## 🚨 Intelligent Alerts
+## 👥 Gestion des clients
 
-The platform detects potential issues:
+Les institutions financières peuvent gérer les profils clients :
 
-- High-risk customers;
-- Repayment problems;
-- Activity decrease;
-- Unusual situations.
+- Informations personnelles ;
+- Activité professionnelle ;
+- Revenus déclarés ;
+- Ancienneté de l'activité ;
+- Localisation ;
+- Indicateurs financiers.
 
 ---
 
-## 📊 Decision Dashboard
+## 💳 Gestion des demandes de crédit
 
-A modern dashboard provides:
+Gestion complète des demandes :
 
-- Number of analyzed applications;
-- Approved credits;
-- Risk distribution;
-- Financial indicators;
-- Critical alerts.
+- Création de demandes de crédit ;
+- Suivi du statut des dossiers ;
+- Analyse d'éligibilité ;
+- Consultation des recommandations.
 
+---
+
+## 🤖 Analyse intelligente des risques
+
+PerfAI Finance génère :
+
+- Score de risque ;
+- Niveau de risque ;
+- Recommandations ;
+- Explications compréhensibles.
+
+Exemple :
+
+> "Risque modéré détecté : revenus stables mais historique de remboursement insuffisant."
+
+---
+
+## 🚨 Alertes intelligentes
+
+La plateforme détecte :
+
+- Clients à risque élevé ;
+- Risques potentiels de remboursement ;
+- Baisse d'activité ;
+- Situations inhabituelles.
+
+---
+
+## 📊 Tableau de bord décisionnel
+
+Un tableau de bord moderne fournit :
+
+- Nombre de demandes analysées ;
+- Crédits approuvés ;
+- Répartition des niveaux de risque ;
+- Indicateurs financiers ;
+- Alertes importantes.
 
 ---
 
 # 🏗️ Architecture
 
-PerfAI Finance follows a modern SaaS architecture:
+PerfAI Finance suit une architecture SaaS moderne et évolutive :
 
+```
               Frontend
                  |
                  |
-          Next.js Application
+          Application Next.js
                  |
                  |
               Supabase
@@ -157,15 +153,18 @@ PerfAI Finance follows a modern SaaS architecture:
     |             |             |
 PostgreSQL      Auth          API
     |
-Database
+Base de données
+```
 
+L'objectif est de conserver une architecture :
 
-The project is designed to be scalable and maintainable.
-
+- Scalable ;
+- Maintenable ;
+- Facile à faire évoluer.
 
 ---
 
-# 🛠️ Tech Stack
+# 🛠️ Stack technique
 
 ## Frontend
 
@@ -177,27 +176,23 @@ The project is designed to be scalable and maintainable.
 <img src="https://img.shields.io/badge/Lucide_Icons-F56565?style=for-the-badge"/>
 </p>
 
-
-## Backend & Database
+## Backend & Base de données
 
 <p>
 <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white"/>
 <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white"/>
 </p>
 
-
-## Authentication
+## Authentification
 
 <p>
 <img src="https://img.shields.io/badge/Google_OAuth-4285F4?style=for-the-badge&logo=google&logoColor=white"/>
 </p>
 
-
-## Development Tools
+## Outils de développement
 
 <p>
 <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"/>
 <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/>
 <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white"/>
 </p>
-
