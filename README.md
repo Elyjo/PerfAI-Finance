@@ -64,3 +64,60 @@ The challenge is to provide a solution capable of:
 # 💡 Solution
 
 PerfAI Finance provides an intelligent workflow:
+
+
+The platform helps financial professionals answer:
+
+> "Is this customer eligible for a credit and why?"
+
+The final decision remains human-controlled, while AI provides meaningful insights.
+
+
+---
+
+# ✨ Main Features
+
+## 🔐 Authentication
+
+- Google OAuth authentication;
+- Secure user sessions;
+- Protected dashboard access;
+- User management.
+
+---
+
+## 👥 Customer Management
+
+Financial institutions can manage customer profiles:
+
+- Personal information;
+- Business activity;
+- Revenue information;
+- Business age;
+- Location;
+- Financial indicators.
+
+---
+
+## 💳 Credit Request Management
+
+Manage credit applications:
+
+- Create credit requests;
+- Track application status;
+- Analyze eligibility;
+- View recommendations.
+
+---
+
+## 🤖 AI Risk Analysis
+
+PerfAI Finance generates:
+
+- Credit score;
+- Risk level;
+- Recommendation;
+- Explainable insights.
+
+Example:
+
