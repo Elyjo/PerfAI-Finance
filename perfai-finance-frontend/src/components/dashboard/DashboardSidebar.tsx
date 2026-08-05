@@ -6,9 +6,7 @@ import {
   LayoutDashboard,
   Users,
   CreditCard,
-  FileText,
   ShieldAlert,
-  Bell,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -31,10 +29,6 @@ const menuItems = [
   {
     label: "Analyse des risques",
     icon: ShieldAlert,
-  },
-  {
-    label: "Alertes",
-    icon: Bell,
   },
   {
     label: "Paramètres",
