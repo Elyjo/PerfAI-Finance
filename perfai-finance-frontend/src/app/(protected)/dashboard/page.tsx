@@ -1,11 +1,35 @@
-import AiCreditInsights from "@/components/dashboard/AiCreditInsights";
-import RiskTrendChart from "@/components/dashboard/RiskTrendChart";
-import SmartAlertsCard from "@/components/dashboard/SmartAlertsCard";
-import KpiCard from "@/components/shared/KpiCard";
+"use client"
 
-import { Users, CreditCard, ShieldAlert, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react"
+import AiCreditInsights from "@/components/dashboard/AiCreditInsights"
+import RiskTrendChart from "@/components/dashboard/RiskTrendChart"
+import SmartAlertsCard from "@/components/dashboard/SmartAlertsCard"
+import KpiCard from "@/components/shared/KpiCard"
+import { getDashboardStats, DashboardStats } from "@/services/dashboardService"
+import { Users, CreditCard, ShieldAlert, TrendingUp } from "lucide-react"
+
 
 export default function DashboardPage() {
+  const [stats, setStats] = useState<DashboardStats>({
+    totalClients: 0,
+    totalCreditRequests: 0,
+    highRiskCount: 0,
+    approvalRate: 0
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getDashboardStats()
+      .then(data => {
+        setStats(data)
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error("Erreur chargement KPIs:", err)
+        setLoading(false)
+      })
+  }, [])
+
   return (
     <section
       className="
@@ -65,7 +89,6 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-
       <div
         className="
           mt-8
@@ -74,17 +97,32 @@ export default function DashboardPage() {
           md:grid-cols-4
         "
       >
-        <KpiCard title="Clients analysés" value="1 248" icon={Users} />
+        <KpiCard 
+          title="Clients analysés" 
+          value={loading ? "..." : stats.totalClients.toLocaleString()} 
+          icon={Users} 
+        />
 
-        <KpiCard title="Demandes de crédit" value="186" icon={CreditCard} />
+        <KpiCard 
+          title="Demandes de crédit" 
+          value={loading ? "..." : stats.totalCreditRequests.toLocaleString()} 
+          icon={CreditCard} 
+        />
 
-        <KpiCard title="Risque élevé" value="24" icon={ShieldAlert} />
+        <KpiCard 
+          title="Risque élevé" 
+          value={loading ? "..." : stats.highRiskCount.toLocaleString()} 
+          icon={ShieldAlert} 
+        />
 
-        <KpiCard title="Taux d'approbation" value="82%" icon={TrendingUp} />
+        <KpiCard 
+          title="Taux d'approbation" 
+          value={loading ? "..." : `${stats.approvalRate}%`} 
+          icon={TrendingUp} 
+        />
       </div>
 
       {/* Charts & Insights */}
-
       <div
         className="
           mt-8
@@ -108,5 +146,5 @@ export default function DashboardPage() {
         </div>
       </div>
     </section>
-  );
+  )
 }
