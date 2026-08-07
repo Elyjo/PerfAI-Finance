@@ -1,8 +1,29 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { signInWithGoogle } from '@/services/authService';
 
-export default function AuthPage() {
+function LoginContent() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error');
+
+  const getErrorMessage = (error: string) => {
+    switch (error) {
+      case 'access_denied':
+        return "Vous avez annulé la connexion. Veuillez réessayer.";
+      case 'Connexion annulée':
+        return "Vous avez annulé la connexion. Veuillez réessayer.";
+      case 'Délai de connexion dépassé':
+        return "La connexion a pris trop de temps. Veuillez réessayer.";
+      case 'Erreur de connexion':
+        return "Une erreur est survenue lors de la connexion. Veuillez réessayer.";
+      default:
+        return error;
+    }
+  };
+
   return (
     <main
       className="
@@ -116,8 +137,22 @@ export default function AuthPage() {
           </p>
         </div>
 
+        {/* Message d'erreur */}
+        {error && (
+          <div className="mt-5 p-4 rounded-xl bg-red-500/15 border border-red-500/30 flex items-start gap-3">
+            <span className="text-red-400 text-lg shrink-0">⚠️</span>
+            <div>
+              <p className="text-red-300 text-sm font-medium">Échec de connexion</p>
+              <p className="text-red-400/80 text-xs mt-1">
+                {getErrorMessage(error)}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Google Button */}
         <button
+          onClick={() => signInWithGoogle()}
           className="
             mt-8
             flex
@@ -171,7 +206,7 @@ export default function AuthPage() {
             text-white/60
           "
         >
-          En continuant, vous acceptez les conditions d’utilisation de PerfAI
+          En continuant, vous acceptez les conditions d&apos;utilisation de PerfAI
           Finance.
         </p>
       </div>
@@ -198,7 +233,7 @@ export default function AuthPage() {
             hover:text-white
           "
         >
-          ← Retour à l’accueil
+          ← Retour à l&apos;accueil
         </Link>
 
         <span
@@ -211,5 +246,17 @@ export default function AuthPage() {
         </span>
       </div>
     </main>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-[#020617]">
+        <p className="text-white">Chargement...</p>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
