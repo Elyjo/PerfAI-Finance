@@ -18,13 +18,13 @@ export const analyzeCreditRequest = async (requestId: string): Promise<RiskAnaly
   // 3. Sauvegarder dans la base
   const { data, error } = await supabase
     .from('risk_analysis')
-    .insert([{
+    .upsert([{
       request_id: requestId,
       score: result.score,
       risk_level: result.riskLevel,
       recommendation: result.recommendation,
       explanation: result.explanation
-    }])
+    }], { onConflict: 'request_id' })
     .select('*')
     .single()
 

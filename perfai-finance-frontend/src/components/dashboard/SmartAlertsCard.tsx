@@ -1,111 +1,45 @@
-import { AlertCircle } from "lucide-react";
+'use client'
 
-const alerts = [
-  {
-    message:
-      "5 demandes de crédit présentent un risque élevé de défaut de paiement",
-    time: "Il y a 45 min",
-    iconStyle: "bg-red-500/10 text-red-500",
-    cardStyle: "bg-red-500/5",
-  },
-  {
-    message:
-      "Une augmentation inhabituelle des demandes a été détectée cette semaine",
-    time: "Il y a 2h",
-    iconStyle: "bg-yellow-400/10 text-yellow-400",
-    cardStyle: "bg-yellow-400/5",
-  },
-];
+import { useCallback, useEffect, useState } from 'react'
+import { AlertCircle } from 'lucide-react'
+import { getAllAlerts } from '@/services/alertService'
+import { Alert } from '@/types/alert'
+import { formatRelativeTime } from '@/utils/formatters'
+import { getRequestErrorMessage } from '@/utils/formatters'
+import RequestError from '@/components/shared/RequestError'
+
+const styles = {
+  critical: 'bg-red-500/5 text-red-400',
+  warning: 'bg-yellow-400/5 text-yellow-400',
+  info: 'bg-[#0B63C7]/10 text-[#4A9FFF]',
+}
 
 export default function SmartAlertsCard() {
+  const [alerts, setAlerts] = useState<Alert[]>([])
+  const [error, setError] = useState<string | null>(null)
+
+  const loadAlerts = useCallback(() => {
+    setError(null)
+    getAllAlerts().then(data => setAlerts(data.slice(0, 3))).catch(error => setError(getRequestErrorMessage(error)))
+  }, [])
+
+  useEffect(() => { loadAlerts() }, [loadAlerts])
+
   return (
-    <div
-      className="
-        rounded-2xl
-        border
-        border-white/10
-        bg-white/5
-        p-6
-        transition
-        duration-300
-        hover:border-[#0B63C7]/30
-        hover:shadow-xl
-        hover:shadow-[#0B63C7]/20
-      "
-    >
-      {/* Header */}
-      <h3
-        className="
-          text-lg
-          font-semibold
-          text-white
-        "
-      >
-        Alertes intelligentes
-      </h3>
-
-      {/* Alerts */}
-      <div
-        className="
-          mt-6
-          flex
-          flex-col
-          gap-4
-        "
-      >
-        {alerts.map((alert, index) => (
-          <div
-            key={index}
-            className={`
-              flex
-              gap-4
-              rounded-xl
-              p-4
-              ${alert.cardStyle}
-            `}
-          >
-            {/* Icon */}
-            <div
-              className={`
-                flex
-                h-10
-                w-10
-                shrink-0
-                items-center
-                justify-center
-                rounded-xl
-                ${alert.iconStyle}
-              `}
-            >
-              <AlertCircle size={20} />
-            </div>
-
-            {/* Content */}
-            <div>
-              <p
-                className="
-                  text-sm
-                  font-medium
-                  leading-relaxed
-                  text-white
-                "
-              >
-                {alert.message}
-              </p>
-
-              <p
-                className="
-                  mt-2
-                  text-xs
-                  text-white/40
-                "
-              >
-                {alert.time}
-              </p>
-            </div>
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:border-[#0B63C7]/30">
+      <h3 className="text-lg font-semibold text-white">Alertes intelligentes</h3>
+      {error ? <RequestError message={error} onRetry={loadAlerts} /> :
+      <div className="mt-6 flex flex-col gap-4">
+        {alerts.length === 0 ? (
+          <p className="rounded-xl bg-white/5 p-4 text-sm text-white/50">Aucune alerte récente.</p>
+        ) : alerts.map(alert => (
+          <div key={alert.id} className={`flex gap-4 rounded-xl p-4 ${styles[alert.severity]}`}>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black/10"><AlertCircle size={20} /></div>
+            <div><p className="text-sm font-medium leading-relaxed text-white">{alert.message}</p><p className="mt-2 text-xs text-white/40">{formatRelativeTime(alert.created_at)}</p></div>
           </div>
         ))}
       </div>
+      }
     </div>
-  );
+  )
 }

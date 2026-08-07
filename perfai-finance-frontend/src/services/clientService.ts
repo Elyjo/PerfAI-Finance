@@ -14,7 +14,7 @@ export const createClient = async (client: CreateClientInput): Promise<Client> =
       monthly_income: client.monthly_income || null,
       business_age: client.business_age || null,
       location: client.location || null,
-      created_by: client.created_by || null
+      ...(client.created_by ? { created_by: client.created_by } : {})
     }])
     .select('*')
     .single()

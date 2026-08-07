@@ -1,94 +1,63 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-
+import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
   Users,
   CreditCard,
   ShieldAlert,
-  Settings,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react";
+  LogOut,
+} from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
+import { ROUTES } from '@/lib/constants'
 
 const menuItems = [
-  {
-    label: "Tableau de bord",
-    icon: LayoutDashboard,
-    active: true,
-  },
-  {
-    label: "Clients",
-    icon: Users,
-  },
-  {
-    label: "Demandes de crédit",
-    icon: CreditCard,
-  },
-  {
-    label: "Analyse des risques",
-    icon: ShieldAlert,
-  },
-  {
-    label: "Paramètres",
-    icon: Settings,
-  },
-];
+  { label: 'Tableau de bord', icon: LayoutDashboard, href: ROUTES.DASHBOARD },
+  { label: 'Clients', icon: Users, href: ROUTES.CLIENTS },
+  { label: 'Demandes de crédit', icon: CreditCard, href: ROUTES.CREDIT_REQUESTS },
+  { label: 'Analyse des risques', icon: ShieldAlert, href: ROUTES.RISK_ANALYSIS },
+]
 
 export default function DashboardSidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(false)
+  const pathname = usePathname()
+  const router = useRouter()
+  const { signOut } = useAuth()
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+    } finally {
+      router.push(ROUTES.LOGIN)
+    }
+  }
 
   return (
     <aside
       className={`
-        fixed
-        left-0
-        top-16
-        h-[calc(100vh-4rem)]
-        border-r
-        border-white/10
-        bg-[#020617]/60
-        backdrop-blur-xl
-        transition-all
-        duration-300
-        ${collapsed ? "w-20" : "w-64"}
+        fixed bottom-0 left-0 z-40
+        h-16 w-full
+        border-t border-white/10
+        bg-[#020617]/60 backdrop-blur-xl
+        transition-all duration-300
+        flex flex-col
+        lg:top-16 lg:h-[calc(100vh-4rem)] lg:w-64 lg:border-r lg:border-t-0
+        ${collapsed ? 'lg:w-20' : 'lg:w-64'}
       `}
     >
-      <div
-        className="
-          flex
-          h-full
-          flex-col
-          px-4
-          py-6
-        "
-      >
-        {/* Toggle button */}
-        <div
-          className={`
-            flex
-            ${collapsed ? "justify-center" : "justify-end"}
-            mb-6
-          `}
-        >
+      <div className="flex h-full items-center px-2 py-2 lg:flex-col lg:items-stretch lg:px-4 lg:py-6">
+        {/* Toggle */}
+        <div className={`hidden lg:flex ${collapsed ? 'justify-center' : 'justify-end'} mb-6`}>
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="
-              flex
-              h-10
-              w-10
-              items-center
-              justify-center
-              rounded-xl
-              border
-              border-white/10
-              bg-white/5
-              text-white/70
-              transition
-              hover:bg-[#0B63C7]/10
-              hover:text-white
-              cursor-pointer
+              flex h-10 w-10 items-center justify-center
+              rounded-xl border border-white/10 bg-white/5 text-white/70
+              transition hover:bg-[#0B63C7]/10 hover:text-white cursor-pointer
             "
           >
             {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
@@ -96,126 +65,67 @@ export default function DashboardSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav
-          className="
-            flex
-            flex-col
-            gap-2
-          "
-        >
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-
+        <nav className="flex flex-1 items-center justify-around gap-1 lg:flex-none lg:flex-col lg:items-stretch lg:justify-start lg:gap-2">
+          {menuItems.map(item => {
+            const Icon = item.icon
+            const isActive = pathname === item.href
             return (
-              <button
-                key={item.label}
+              <Link
+                key={item.href}
+                href={item.href}
                 className={`
-                  flex
-                  items-center
-                  ${collapsed ? "justify-center" : "gap-3"}
-                  rounded-xl
-                  px-4
-                  py-3
-                  text-sm
-                  font-medium
-                  transition
-                  cursor-pointer
-
-                  ${
-                    item.active
-                      ? `
-                        border
-                        border-[#0B63C7]/30
-                        bg-[#0B63C7]/15
-                        shadow-lg
-                        shadow-[#0B63C7]/10
-                        text-white
-                      `
-                      : `
-                        text-white/60
-                        hover:bg-white/5
-                        hover:text-white
-                      `
+                  flex items-center
+                  justify-center ${collapsed ? 'lg:justify-center' : 'lg:justify-start lg:gap-3'}
+                  rounded-xl px-3 py-3 text-sm font-medium transition lg:px-4
+                  ${isActive
+                    ? 'border border-[#0B63C7]/30 bg-[#0B63C7]/15 shadow-lg shadow-[#0B63C7]/10 text-white'
+                    : 'text-white/60 hover:bg-white/5 hover:text-white'
                   }
                 `}
+                title={item.label}
               >
-                <Icon
-                  size={20}
-                  className={item.active ? "text-[#0B63C7]" : "text-white/50"}
-                />
-
-                {!collapsed && item.label}
-              </button>
-            );
+                <Icon size={20} className={isActive ? 'text-[#0B63C7]' : 'text-white/50'} />
+                {!collapsed && <span className="hidden lg:inline">{item.label}</span>}
+              </Link>
+            )
           })}
         </nav>
 
-        {/* Bottom information */}
-        {!collapsed && (
-          <div
-            className="
-              mt-auto
-              rounded-2xl
-              border
-              border-white/10
-              bg-white/5
-              p-4
-            "
+        {/* Bottom */}
+        <div className="mt-auto hidden flex-col gap-3 lg:flex">
+          {/* Sign out */}
+          <button
+            onClick={handleSignOut}
+            className={`
+              flex items-center
+              ${collapsed ? 'justify-center' : 'gap-3'}
+              rounded-xl px-4 py-3 text-sm font-medium
+              text-white/50 transition
+              hover:bg-red-500/10 hover:text-red-400 cursor-pointer
+            `}
+            title={collapsed ? 'Déconnexion' : undefined}
           >
-            <p
-              className="
-                text-xs
-                font-medium
-                tracking-wide
-                uppercase
-                text-white/40
-              "
-            >
-              PerfAI Finance Intelligence
-            </p>
+            <LogOut size={20} />
+            {!collapsed && 'Déconnexion'}
+          </button>
 
-            <div
-              className="
-                mt-3
-                flex
-                items-center
-                gap-2
-              "
-            >
-              <div
-                className="
-                  h-2
-                  w-2
-                  rounded-full
-                  bg-[#0B63C7]
-                "
-              />
-
-              <span
-                className="
-                  text-sm
-                  font-medium
-                  text-white
-                "
-              >
-                Analyse IA activée
-              </span>
+          {/* Info card */}
+          {!collapsed && (
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-white/40">
+                PerfAI Finance Intelligence
+              </p>
+              <div className="mt-3 flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-[#0B63C7]" />
+                <span className="text-sm font-medium text-white">Analyse IA activée</span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-white/50">
+                Surveillance intelligente des crédits, risques et comportements financiers.
+              </p>
             </div>
-
-            <p
-              className="
-                mt-2
-                text-xs
-                leading-relaxed
-                text-white/50
-              "
-            >
-              Surveillance intelligente des crédits, risques et comportements
-              financiers.
-            </p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </aside>
-  );
+  )
 }

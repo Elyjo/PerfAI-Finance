@@ -1,12 +1,16 @@
+
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
+import Link from "next/link"
 import AiCreditInsights from "@/components/dashboard/AiCreditInsights"
 import RiskTrendChart from "@/components/dashboard/RiskTrendChart"
 import SmartAlertsCard from "@/components/dashboard/SmartAlertsCard"
 import KpiCard from "@/components/shared/KpiCard"
 import { getDashboardStats, DashboardStats } from "@/services/dashboardService"
 import { Users, CreditCard, ShieldAlert, TrendingUp } from "lucide-react"
+import RequestError from "@/components/shared/RequestError"
+import { getRequestErrorMessage } from "@/utils/formatters"
 
 
 export default function DashboardPage() {
@@ -17,40 +21,51 @@ export default function DashboardPage() {
     approvalRate: 0
   })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const loadStats = useCallback(() => {
+    setLoading(true)
+    setError(null)
     getDashboardStats()
       .then(data => {
         setStats(data)
-        setLoading(false)
       })
-      .catch(err => {
-        console.error("Erreur chargement KPIs:", err)
-        setLoading(false)
-      })
+      .catch(err => setError(getRequestErrorMessage(err)))
+      .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    loadStats()
+  }, [loadStats])
 
   return (
     <section
       className="
         min-h-screen
-        px-12
-        py-10
+        px-4
+        py-6
+        sm:px-6
+        lg:px-12
+        lg:py-10
       "
     >
       <div
         className="
           flex
-          items-center
+          flex-col
+          gap-5
+          sm:flex-row
+          sm:items-center
           justify-between
         "
       >
         <div>
           <h1
             className="
-              text-4xl
-              font-bold
-              text-white
+            text-3xl
+            font-bold
+            text-white
+            sm:text-4xl
             "
           >
             Tableau de bord
@@ -66,7 +81,8 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <button
+        <Link
+          href="/credit-requests?create=1"
           className="
             flex
             items-center
@@ -85,8 +101,10 @@ export default function DashboardPage() {
         >
           <span className="text-lg">+</span>
           Nouvelle demande
-        </button>
+        </Link>
       </div>
+
+      {error && <RequestError message={error} onRetry={loadStats} />}
 
       {/* KPI Cards */}
       <div

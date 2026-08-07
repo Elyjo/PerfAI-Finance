@@ -1,5 +1,6 @@
 import DashboardNavbar from "@/components/dashboard/DashboardNavbar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 export default function ProtectedLayout({
   children,
@@ -7,6 +8,7 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
+    <AuthGuard>
     <div
       className="
         relative
@@ -68,14 +70,18 @@ export default function ProtectedLayout({
 
         <main
           className="
-            ml-64
+            ml-0
             flex-1
             overflow-x-hidden
+            pb-20
+            lg:ml-64
+            lg:pb-0
           "
         >
           {children}
         </main>
       </div>
     </div>
+    </AuthGuard>
   );
 }

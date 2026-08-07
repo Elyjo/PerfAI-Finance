@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { signInWithGoogle } from '@/services/authService';
 
 function LoginContent() {
   const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  const [connectionError, setConnectionError] = useState<string | null>(null)
+  const error = connectionError ?? searchParams.get('error');
 
   const getErrorMessage = (error: string) => {
     switch (error) {
@@ -152,7 +153,10 @@ function LoginContent() {
 
         {/* Google Button */}
         <button
-          onClick={() => signInWithGoogle()}
+          onClick={() => {
+            setConnectionError(null)
+            signInWithGoogle().catch(() => setConnectionError('Erreur de connexion'))
+          }}
           className="
             mt-8
             flex

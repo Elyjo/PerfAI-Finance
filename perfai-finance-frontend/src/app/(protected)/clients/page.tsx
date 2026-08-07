@@ -1,15 +1,17 @@
 import ClientTable from "@/components/clients/ClientTable";
 import AiClientInsights from "@/components/clients/AiClientInsights";
 import RecentClientActivityCard from "@/components/clients/RecentClientActivityCard";
-import { UserPlus } from "lucide-react";
 
 export default function ClientsPage() {
   return (
     <section
       className="
         min-h-screen
-        px-12
-        py-10
+        px-4
+        py-6
+        sm:px-6
+        lg:px-12
+        lg:py-10
       "
     >
       {/* Header */}
@@ -23,9 +25,10 @@ export default function ClientsPage() {
         <div>
           <h1
             className="
-              text-4xl
-              font-bold
-              text-white
+            text-3xl
+            font-bold
+            text-white
+            sm:text-4xl
             "
           >
             Clients
@@ -41,26 +44,6 @@ export default function ClientsPage() {
           </p>
         </div>
 
-        <button
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-xl
-            bg-[#0B63C7]
-            px-5
-            py-3
-            text-sm
-            font-semibold
-            text-white
-            transition
-            hover:bg-[#0954a8]
-            cursor-pointer
-          "
-        >
-          <UserPlus size={18} />
-          Nouveau client
-        </button>
       </div>
 
       {/* Content */}

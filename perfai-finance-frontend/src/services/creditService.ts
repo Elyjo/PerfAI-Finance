@@ -13,7 +13,7 @@ export const createCreditRequest = async (request: CreateCreditRequestInput): Pr
       duration_months: request.duration_months || null,
       purpose: request.purpose || null,
       status: request.status || 'pending',
-      created_by: request.created_by || null
+      ...(request.created_by ? { created_by: request.created_by } : {})
     }])
     .select('*')
     .single()

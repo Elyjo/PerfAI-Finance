@@ -119,7 +119,7 @@ export const deleteAlertsByClient = async (clientId: string): Promise<boolean> =
 export const generateRiskAlerts = async (clientId: string, riskLevel: string, score: number): Promise<void> => {
   const alerts: CreateAlertInput[] = []
 
-  if (riskLevel === 'Eleve') {
+  if (riskLevel === 'Élevé') {
     alerts.push({
       client_id: clientId,
       type: 'risk_high',

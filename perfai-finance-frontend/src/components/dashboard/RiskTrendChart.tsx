@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useState } from 'react'
 import {
   LineChart,
   Line,
@@ -9,34 +10,11 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { getAllRiskAnalyses } from '@/services/riskService'
+import { getRequestErrorMessage } from '@/utils/formatters'
+import RequestError from '@/components/shared/RequestError'
 
-const riskData = [
-  {
-    month: "Jan",
-    real: 28,
-    target: 30,
-  },
-  {
-    month: "Fév",
-    real: 24,
-    target: 28,
-  },
-  {
-    month: "Mar",
-    real: 20,
-    target: 25,
-  },
-  {
-    month: "Avr",
-    real: 18,
-    target: 22,
-  },
-  {
-    month: "Mai",
-    real: 15,
-    target: 20,
-  },
-];
+type RiskPoint = { month: string; real: number; target: number }
 
 type CustomTooltipProps = {
   active?: boolean;
@@ -101,6 +79,22 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 }
 
 export default function RiskTrendChart() {
+  const [riskData, setRiskData] = useState<RiskPoint[]>([])
+  const [error, setError] = useState<string | null>(null)
+
+  const loadTrend = useCallback(() => {
+    setError(null)
+    getAllRiskAnalyses()
+      .then(analyses => setRiskData(analyses.slice(0, 5).reverse().map(analysis => ({
+        month: new Intl.DateTimeFormat('fr-FR', { month: 'short' }).format(new Date(analysis.created_at)),
+        real: 100 - analysis.score,
+        target: 30,
+      }))))
+      .catch(error => setError(getRequestErrorMessage(error)))
+  }, [])
+
+  useEffect(() => { loadTrend() }, [loadTrend])
+
   return (
     <div
       className="
@@ -144,6 +138,7 @@ export default function RiskTrendChart() {
         </span>
       </div>
 
+      {error ? <RequestError message={error} onRetry={loadTrend} /> : <>
       {/* Legend */}
       <div
         className="
@@ -191,6 +186,7 @@ export default function RiskTrendChart() {
           <span className="text-white/70">Seuil cible</span>
         </div>
       </div>
+      </>}
 
       {/* Chart */}
       <div
@@ -199,7 +195,9 @@ export default function RiskTrendChart() {
           h-72
         "
       >
-        <ResponsiveContainer width="100%" height="100%">
+        {error ? null : riskData.length === 0 ? (
+          <div className="flex h-full items-center justify-center text-sm text-white/40">Aucune analyse enregistrée.</div>
+        ) : <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={riskData}
             margin={{
@@ -230,7 +228,7 @@ export default function RiskTrendChart() {
             />
 
             <YAxis
-              domain={[0, 40]}
+              domain={[0, 100]}
               stroke="rgba(255,255,255,0.3)"
               tickLine={false}
               axisLine={false}
@@ -255,7 +253,7 @@ export default function RiskTrendChart() {
               dot={false}
             />
           </LineChart>
-        </ResponsiveContainer>
+        </ResponsiveContainer>}
       </div>
     </div>
   );
