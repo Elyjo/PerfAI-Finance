@@ -69,7 +69,7 @@ export default function ClientTable() {
   const { clients, loading, error, addClient, editClient, removeClient, refresh } = useClients()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [isCreateOpen, setIsCreateOpen] = useState(() => searchParams.get('create') === '1')
+  const isCreateOpen = searchParams.get('create') === '1'
   const [editTarget, setEditTarget] = useState<Client | null>(null)
   const [form, setForm] = useState(EMPTY_FORM)
   const [submitting, setSubmitting] = useState(false)
@@ -107,7 +107,6 @@ export default function ClientTable() {
   const hasFilters = Boolean(query || riskFilter !== 'all')
 
   const closeCreate = () => {
-    setIsCreateOpen(false)
     if (searchParams.get('create') === '1') router.replace('/clients')
   }
 

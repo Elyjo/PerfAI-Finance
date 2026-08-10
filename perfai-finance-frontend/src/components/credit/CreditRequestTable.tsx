@@ -34,7 +34,7 @@ export default function CreditRequestTable() {
   const { clients, error: clientsError, refresh: refreshClients } = useClients()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [isCreateOpen, setIsCreateOpen] = useState(() => searchParams.get('create') === '1')
+  const isCreateOpen = searchParams.get('create') === '1'
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [analyses, setAnalyses] = useState<RiskAnalysis[]>([])
@@ -77,7 +77,6 @@ export default function CreditRequestTable() {
   const hasFilters = Boolean(query || statusFilter !== 'all' || riskFilter !== 'all')
 
   const closeCreate = () => {
-    setIsCreateOpen(false)
     if (searchParams.get('create') === '1') router.replace('/credit-requests')
   }
 
