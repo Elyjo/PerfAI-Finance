@@ -16,7 +16,7 @@ export default function AiCreditInsights() {
     getAllRiskAnalyses().then(setAnalyses).catch(error => setError(getRequestErrorMessage(error)))
   }, [])
 
-  useEffect(() => { loadAnalyses() }, [loadAnalyses])
+  useEffect(() => { void Promise.resolve().then(loadAnalyses) }, [loadAnalyses])
 
   const highRisk = analyses.filter(item => item.risk_level === 'Élevé').length
   const average = analyses.length ? Math.round(analyses.reduce((sum, item) => sum + item.score, 0) / analyses.length) : null

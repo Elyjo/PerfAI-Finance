@@ -22,6 +22,13 @@ export type ScoringResult = {
  * Score sur 100 — Plus c'est élevé, moins c'est risqué
  */
 export const calculateScore = (client: Client, request: CreditRequest): ScoringResult => {
+  if (!Number.isFinite(request.amount) || request.amount <= 0) {
+    throw new Error('Le montant de la demande doit être supérieur à zéro.')
+  }
+  if (request.duration_months !== undefined && (!Number.isFinite(request.duration_months) || request.duration_months <= 0)) {
+    throw new Error('La durée de la demande doit être supérieure à zéro.')
+  }
+
   let score = 50
   const details = {
     stabilityPoints: 0,
@@ -32,25 +39,25 @@ export const calculateScore = (client: Client, request: CreditRequest): ScoringR
   }
 
   // 1. Stabilité de l'activité
-  if (client.business_age && client.business_age > 5) {
+  if (client.business_age && client.business_age >= 5) {
     details.stabilityPoints = 20
     score += 20
-  } else if (client.business_age && client.business_age > 3) {
+  } else if (client.business_age && client.business_age >= 3) {
     details.stabilityPoints = 15
     score += 15
-  } else if (client.business_age && client.business_age > 1) {
+  } else if (client.business_age && client.business_age >= 1) {
     details.stabilityPoints = 8
     score += 8
   }
 
   // 2. Ancienneté / expérience
-  if (client.business_age && client.business_age > 5) {
+  if (client.business_age && client.business_age >= 5) {
     details.experiencePoints = 15
     score += 15
-  } else if (client.business_age && client.business_age > 3) {
+  } else if (client.business_age && client.business_age >= 3) {
     details.experiencePoints = 10
     score += 10
-  } else if (client.business_age && client.business_age > 1) {
+  } else if (client.business_age && client.business_age >= 1) {
     details.experiencePoints = 5
     score += 5
   }

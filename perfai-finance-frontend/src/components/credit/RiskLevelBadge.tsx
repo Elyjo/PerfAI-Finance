@@ -1,5 +1,5 @@
 interface RiskLevelBadgeProps {
-  riskLevel: "Faible" | "Moyen" | "Élevé";
+  riskLevel?: "Faible" | "Moyen" | "Élevé" | null;
 }
 
 const riskStyles = {
@@ -23,6 +23,10 @@ const riskStyles = {
 };
 
 export default function RiskLevelBadge({ riskLevel }: RiskLevelBadgeProps) {
+  if (!riskLevel) {
+    return <span className="text-xs text-white/40">À analyser</span>
+  }
+
   const style = riskStyles[riskLevel];
 
   return (

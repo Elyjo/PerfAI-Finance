@@ -1,4 +1,7 @@
+import Link from "next/link";
+import { Plus } from "lucide-react";
 import CreditRequestTable from "@/components/credit/CreditRequestTable";
+import CreditRequestKpis from "@/components/credit/CreditRequestKpis";
 import RecentCreditActivityCard from "@/components/credit/RiskCreditActivityCard";
 
 export default function CreditRequestsPage() {
@@ -43,16 +46,22 @@ export default function CreditRequestsPage() {
             l&apos;intelligence artificielle.
           </p>
         </div>
-
       </div>
+
+      <Link href="/credit-requests?create=1" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#0B63C7] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0954a8]">
+        <Plus size={17} />
+        Nouvelle demande
+      </Link>
+
+      <CreditRequestKpis />
 
       {/* Content */}
       <div
         className="
-          mt-8
+          mt-6
           grid
           gap-6
-          lg:grid-cols-[2fr_1fr]
+          lg:grid-cols-[minmax(0,1fr)_20rem]
           items-start
         "
       >

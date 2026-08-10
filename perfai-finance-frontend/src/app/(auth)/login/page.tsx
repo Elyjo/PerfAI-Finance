@@ -2,13 +2,22 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { signInWithGoogle } from '@/services/authService';
+import { supabase } from '@/lib/supabase';
 
 function LoginContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [connectionError, setConnectionError] = useState<string | null>(null)
   const error = connectionError ?? searchParams.get('error');
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) router.replace('/dashboard')
+    })
+  }, [router])
 
   const getErrorMessage = (error: string) => {
     switch (error) {

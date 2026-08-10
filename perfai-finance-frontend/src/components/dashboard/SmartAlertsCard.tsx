@@ -23,7 +23,7 @@ export default function SmartAlertsCard() {
     getAllAlerts().then(data => setAlerts(data.slice(0, 3))).catch(error => setError(getRequestErrorMessage(error)))
   }, [])
 
-  useEffect(() => { loadAlerts() }, [loadAlerts])
+  useEffect(() => { void Promise.resolve().then(loadAlerts) }, [loadAlerts])
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:border-[#0B63C7]/30">

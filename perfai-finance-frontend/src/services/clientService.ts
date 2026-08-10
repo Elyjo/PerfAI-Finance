@@ -5,6 +5,14 @@ import { Client, CreateClientInput, UpdateClientInput } from '@/types/client'
 // CREATE — Créer un client
 // ============================================
 export const createClient = async (client: CreateClientInput): Promise<Client> => {
+  if (!client.full_name.trim()) throw new Error('Le nom complet est obligatoire.')
+  if (client.monthly_income !== undefined && (!Number.isFinite(client.monthly_income) || client.monthly_income < 0)) {
+    throw new Error('Le revenu mensuel doit être un montant positif.')
+  }
+  if (client.business_age !== undefined && (!Number.isFinite(client.business_age) || client.business_age < 0)) {
+    throw new Error('L’ancienneté doit être positive.')
+  }
+
   const { data, error } = await supabase
     .from('clients')
     .insert([{
@@ -63,6 +71,14 @@ export const getClientById = async (id: string): Promise<Client> => {
 // UPDATE — Modifier un client
 // ============================================
 export const updateClient = async (id: string, updates: UpdateClientInput): Promise<Client> => {
+  if (updates.full_name !== undefined && !updates.full_name.trim()) throw new Error('Le nom complet est obligatoire.')
+  if (updates.monthly_income !== undefined && (updates.monthly_income === null || !Number.isFinite(updates.monthly_income) || updates.monthly_income < 0)) {
+    throw new Error('Le revenu mensuel doit être un montant positif.')
+  }
+  if (updates.business_age !== undefined && (updates.business_age === null || !Number.isFinite(updates.business_age) || updates.business_age < 0)) {
+    throw new Error('L’ancienneté doit être positive.')
+  }
+
   const { data, error } = await supabase
     .from('clients')
     .update({

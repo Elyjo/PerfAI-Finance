@@ -5,6 +5,12 @@ import { CreditRequest, CreateCreditRequestInput, UpdateCreditRequestInput } fro
 // CREATE — Créer une demande de crédit
 // ============================================
 export const createCreditRequest = async (request: CreateCreditRequestInput): Promise<CreditRequest> => {
+  if (!request.client_id) throw new Error('Un client doit être sélectionné.')
+  if (!Number.isFinite(request.amount) || request.amount <= 0) throw new Error('Le montant doit être supérieur à zéro.')
+  if (request.duration_months !== undefined && (!Number.isFinite(request.duration_months) || request.duration_months <= 0)) {
+    throw new Error('La durée doit être supérieure à zéro.')
+  }
+
   const { data, error } = await supabase
     .from('credit_requests')
     .insert([{

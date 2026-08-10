@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Plus, CreditCard } from 'lucide-react'
+import { CreditCard, Search, SlidersHorizontal, X } from 'lucide-react'
 import CreditStatusBadge from './CreditStatusBadge'
 import RiskLevelBadge from './RiskLevelBadge'
 import Modal from '@/components/shared/Modal'
@@ -10,21 +10,15 @@ import Loading from '@/components/shared/Loading'
 import EmptyState from '@/components/shared/EmptyState'
 import { useCreditRequests } from '@/hooks/useCreditRequest'
 import { useClients } from '@/hooks/useClients'
-import { formatCurrency, formatDate } from '@/utils/formatters'
+import { getAllRiskAnalyses } from '@/services/riskService'
+import { RiskAnalysis } from '@/types/analysis'
+import { formatCurrency } from '@/utils/formatters'
 import RequestError from '@/components/shared/RequestError'
 
 const STATUS_LABELS: Record<string, string> = {
   pending: 'En attente',
   approved: 'Approuvé',
   rejected: 'Rejeté',
-}
-
-const RISK_FROM_AMOUNT: (amount: number, income?: number) => 'Faible' | 'Moyen' | 'Élevé' = (amount, income) => {
-  if (!income) return 'Moyen'
-  const ratio = amount / (income * 12)
-  if (ratio < 0.5) return 'Faible'
-  if (ratio < 1) return 'Moyen'
-  return 'Élevé'
 }
 
 const inputClass = `
@@ -42,6 +36,11 @@ export default function CreditRequestTable() {
   const searchParams = useSearchParams()
   const [isCreateOpen, setIsCreateOpen] = useState(() => searchParams.get('create') === '1')
   const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [analyses, setAnalyses] = useState<RiskAnalysis[]>([])
+  const [query, setQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [riskFilter, setRiskFilter] = useState('all')
   const [form, setForm] = useState({
     client_id: '',
     amount: '',
@@ -49,7 +48,33 @@ export default function CreditRequestTable() {
     purpose: '',
   })
 
+  useEffect(() => {
+    void getAllRiskAnalyses().then(setAnalyses).catch(() => setAnalyses([]))
+  }, [])
+
+  const analysesByRequest = useMemo(
+    () => new Map(analyses.map(analysis => [analysis.request_id, analysis])),
+    [analyses]
+  )
+
   const getClient = (id: string) => clients.find(c => c.id === id)
+
+  const filteredRequests = useMemo(() => requests.filter(request => {
+    const client = getClient(request.client_id)
+    const analysis = analysesByRequest.get(request.id)
+    const searchable = `${client?.full_name ?? ''} ${client?.activity ?? ''} ${request.purpose ?? ''}`.toLocaleLowerCase()
+    return searchable.includes(query.trim().toLocaleLowerCase())
+      && (statusFilter === 'all' || request.status === statusFilter)
+      && (riskFilter === 'all' || analysis?.risk_level === riskFilter)
+  }), [analysesByRequest, clients, query, requests, riskFilter, statusFilter])
+
+  const clearFilters = () => {
+    setQuery('')
+    setStatusFilter('all')
+    setRiskFilter('all')
+  }
+
+  const hasFilters = Boolean(query || statusFilter !== 'all' || riskFilter !== 'all')
 
   const closeCreate = () => {
     setIsCreateOpen(false)
@@ -58,6 +83,7 @@ export default function CreditRequestTable() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitError(null)
     setSubmitting(true)
     try {
       await addRequest({
@@ -69,6 +95,8 @@ export default function CreditRequestTable() {
       })
       closeCreate()
       setForm({ client_id: '', amount: '', duration_months: '', purpose: '' })
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'La demande n’a pas pu être créée.')
     } finally {
       setSubmitting(false)
     }
@@ -87,17 +115,6 @@ export default function CreditRequestTable() {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
           <h2 className="text-lg font-semibold text-white">Demandes de crédit</h2>
-          <button
-            onClick={() => setIsCreateOpen(true)}
-            className="
-              flex items-center gap-2 rounded-xl bg-[#0B63C7]
-              px-4 py-2 text-sm font-semibold text-white
-              transition hover:bg-[#0954a8] cursor-pointer
-            "
-          >
-            <Plus size={16} />
-            Nouvelle demande
-          </button>
         </div>
 
         {/* Content */}
@@ -108,41 +125,61 @@ export default function CreditRequestTable() {
         ) : requests.length === 0 ? (
           <EmptyState icon={CreditCard} title="Aucune demande" description="Créez votre première demande de crédit." />
         ) : (
+          <>
+          <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-4 xl:flex-row xl:items-center">
+            <div className="relative min-w-0 flex-1">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+              <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Rechercher un client, secteur ou motif…" className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-9 pr-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-[#0B63C7]/60" />
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <SlidersHorizontal size={16} className="text-white/40" />
+              <select value={statusFilter} onChange={event => setStatusFilter(event.target.value)} className="rounded-xl border border-white/10 bg-[#0b1224] px-3 py-2.5 text-sm text-white outline-none focus:border-[#0B63C7]/60">
+                <option value="all">Tous les statuts</option>
+                <option value="pending">En attente</option>
+                <option value="approved">Approuvées</option>
+                <option value="rejected">Rejetées</option>
+              </select>
+              <select value={riskFilter} onChange={event => setRiskFilter(event.target.value)} className="rounded-xl border border-white/10 bg-[#0b1224] px-3 py-2.5 text-sm text-white outline-none focus:border-[#0B63C7]/60">
+                <option value="all">Tous les risques</option>
+                <option value="Faible">Risque faible</option>
+                <option value="Moyen">Risque moyen</option>
+                <option value="Élevé">Risque élevé</option>
+              </select>
+              {hasFilters && <button onClick={clearFilters} className="inline-flex items-center gap-1 rounded-xl px-2 py-2 text-xs text-white/60 transition hover:bg-white/5 hover:text-white"><X size={15} />Effacer</button>}
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-white/40">
-                  <th className="px-6 py-4">Client</th>
-                  <th className="px-6 py-4">Montant</th>
-                  <th className="px-6 py-4">Durée</th>
-                  <th className="px-6 py-4">Risque</th>
-                  <th className="px-6 py-4">Statut</th>
-                  <th className="px-6 py-4">Date</th>
-                  <th className="px-6 py-4">Action</th>
+                  <th className="px-5 py-4">Client</th>
+                  <th className="px-5 py-4">Secteur</th>
+                  <th className="px-5 py-4">Montant</th>
+                  <th className="px-5 py-4">Durée</th>
+                  <th className="px-5 py-4">Statut</th>
+                  <th className="px-5 py-4">Risque</th>
+                  <th className="px-5 py-4">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {requests.map(req => {
+                {filteredRequests.map(req => {
                   const client = getClient(req.client_id)
-                  const risk = RISK_FROM_AMOUNT(req.amount, client?.monthly_income)
+                  const analysis = analysesByRequest.get(req.id)
                   return (
-                    <tr key={req.id} className="border-b border-white/5 transition hover:bg-white/3">
-                      <td className="px-6 py-5">
-                        <p className="font-medium text-white">{client?.full_name ?? '—'}</p>
-                        <p className="mt-1 text-xs text-white/40">{client?.activity ?? '—'}</p>
-                      </td>
-                      <td className="px-6 py-5 text-sm text-white/70">{formatCurrency(req.amount)}</td>
-                      <td className="px-6 py-5 text-sm text-white/70">
+                    <tr key={req.id} className="border-b border-white/5 text-sm transition hover:bg-white/3">
+                      <td className="whitespace-nowrap px-5 py-4 font-medium text-white">{client?.full_name ?? '—'}</td>
+                      <td className="max-w-40 truncate px-5 py-4 text-white/50">{client?.activity ?? '—'}</td>
+                      <td className="whitespace-nowrap px-5 py-4 text-white/70">{formatCurrency(req.amount)}</td>
+                      <td className="whitespace-nowrap px-5 py-4 text-white/70">
                         {req.duration_months ? `${req.duration_months} mois` : '—'}
                       </td>
-                      <td className="px-6 py-5">
-                        <RiskLevelBadge riskLevel={risk} />
-                      </td>
-                      <td className="px-6 py-5">
+                      <td className="whitespace-nowrap px-5 py-4">
                         <CreditStatusBadge status={STATUS_LABELS[req.status] as 'Approuvé' | 'En attente' | 'Rejeté' | 'En analyse'} />
                       </td>
-                      <td className="px-6 py-5 text-sm text-white/70">{formatDate(req.created_at)}</td>
-                      <td className="px-6 py-5">
+                      <td className="whitespace-nowrap px-5 py-4">
+                        <RiskLevelBadge riskLevel={analysis?.risk_level} />
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4">
                         {req.status === 'pending' && (
                           <div className="flex gap-2">
                             <button
@@ -165,10 +202,12 @@ export default function CreditRequestTable() {
                 })}
               </tbody>
             </table>
+            {filteredRequests.length === 0 && <div className="border-t border-white/10 px-6 py-8 text-center text-sm text-white/50">Aucune demande ne correspond aux filtres sélectionnés.</div>}
             <div className="flex items-center justify-between border-t border-white/10 px-6 py-4">
-              <p className="text-sm text-white/50">{requests.length} demande{requests.length > 1 ? 's' : ''}</p>
+              <p className="text-sm text-white/50">{filteredRequests.length} demande{filteredRequests.length > 1 ? 's' : ''}{hasFilters ? ` sur ${requests.length}` : ''}</p>
             </div>
           </div>
+          </>
         )}
       </div>
 
@@ -201,6 +240,8 @@ export default function CreditRequestTable() {
               <input
                 className={inputClass}
                 type="number"
+                min="1"
+                step="1"
                 placeholder="Ex: 1000000"
                 value={form.amount}
                 onChange={e => setForm(p => ({ ...p, amount: e.target.value }))}
@@ -212,12 +253,15 @@ export default function CreditRequestTable() {
               <input
                 className={inputClass}
                 type="number"
+                min="1"
+                step="1"
                 placeholder="Ex: 12"
                 value={form.duration_months}
                 onChange={e => setForm(p => ({ ...p, duration_months: e.target.value }))}
               />
             </div>
           </div>
+          {submitError && <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">{submitError}</p>}
           <div>
             <label className={labelClass}>Motif du crédit</label>
             <input

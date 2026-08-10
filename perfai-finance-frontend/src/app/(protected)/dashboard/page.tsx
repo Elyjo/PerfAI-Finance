@@ -35,7 +35,7 @@ export default function DashboardPage() {
   }, [])
 
   useEffect(() => {
-    loadStats()
+    void Promise.resolve().then(loadStats)
   }, [loadStats])
 
   return (

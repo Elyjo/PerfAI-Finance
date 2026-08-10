@@ -36,6 +36,7 @@ export function useCreditRequests() {
   }, [fetchRequests])
 
   const addRequest = async (input: Omit<CreateCreditRequestInput, 'created_by'>) => {
+    if (!user) throw new Error('Votre session a expiré. Veuillez vous reconnecter.')
     const data = await createCreditRequest({ ...input, created_by: user?.id })
     setRequests(prev => [data, ...prev])
     return data

@@ -37,6 +37,7 @@ export function useClients() {
   }, [fetchClients])
 
   const addClient = async (input: Omit<CreateClientInput, 'created_by'>) => {
+    if (!user) throw new Error('Votre session a expiré. Veuillez vous reconnecter.')
     const data = await createClient({ ...input, created_by: user?.id })
     setClients(prev => [data, ...prev])
     return data

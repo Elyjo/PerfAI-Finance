@@ -146,7 +146,16 @@ export const generateRiskAlerts = async (clientId: string, riskLevel: string, sc
     })
   }
 
-  for (const alert of alerts) {
-    await createAlert(alert)
-  }
+  // Une réanalyse remplace les alertes de risque précédentes du client :
+  // cela évite d'empiler des alertes identiques à chaque recalcul.
+  const riskAlertTypes = ['risk_high', 'risk_medium', 'low_risk_good']
+  const { error } = await supabase
+    .from('alerts')
+    .delete()
+    .eq('client_id', clientId)
+    .in('type', riskAlertTypes)
+
+  if (error) throw new Error(error.message)
+
+  await Promise.all(alerts.map(createAlert))
 }

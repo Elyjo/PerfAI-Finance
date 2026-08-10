@@ -12,8 +12,7 @@ function CallbackContent() {
     // Vérifie d'abord s'il y a une erreur dans l'URL (annulation Google)
     const error = searchParams.get('error')
     if (error) {
-      console.log('❌ Erreur dans l\'URL:', error)
-      router.push('/login?error=Connexion annulée')
+      router.replace('/login?error=Connexion annulée')
       return
     }
 
@@ -21,24 +20,21 @@ function CallbackContent() {
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error) {
         console.error('Erreur session:', error.message)
-        router.push('/login?error=Erreur de connexion')
+        router.replace('/login?error=Erreur de connexion')
         return
       }
       
       if (session) {
-        console.log('✅ Session trouvée, redirection dashboard')
-        router.push('/dashboard')
+        router.replace('/dashboard')
       } else {
-        console.log('⏳ Pas de session, attente du state change...')
+        router.replace('/login?error=Erreur de connexion')
       }
     })
 
     // Écoute le changement d'état auth
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state change:', event, session ? 'session OK' : 'pas de session')
-      
       if (event === 'SIGNED_IN' && session) {
-        router.push('/dashboard')
+        router.replace('/dashboard')
       }
     })
 
@@ -47,24 +43,12 @@ function CallbackContent() {
     }
   }, [router, searchParams])
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-[#020617]">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-[#0B63C7] mx-auto mb-4"></div>
-        <p className="text-white text-lg">Connexion en cours...</p>
-        <p className="text-white/60 text-sm mt-2">Veuillez patienter</p>
-      </div>
-    </div>
-  )
+  return null
 }
 
 export default function AuthCallbackPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-[#020617]">
-        <p className="text-white">Chargement...</p>
-      </div>
-    }>
+    <Suspense fallback={null}>
       <CallbackContent />
     </Suspense>
   )

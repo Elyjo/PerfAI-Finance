@@ -1,5 +1,5 @@
 interface ClientRiskBadgeProps {
-  risk: "Élevé" | "Moyen" | "Faible";
+  risk?: "Élevé" | "Moyen" | "Faible" | null;
 }
 
 const riskStyles = {
@@ -23,6 +23,10 @@ const riskStyles = {
 };
 
 export default function ClientRiskBadge({ risk }: ClientRiskBadgeProps) {
+  if (!risk) {
+    return <span className="text-xs text-white/40">À analyser</span>
+  }
+
   const style = riskStyles[risk];
 
   return (
