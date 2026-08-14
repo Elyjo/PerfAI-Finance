@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, ShieldCheck } from 'lucide-react'
+import { ArrowRight, FileText, ShieldCheck } from 'lucide-react'
 import { ROUTES } from '@/lib/constants'
 
 export default function Hero() {
@@ -40,6 +40,13 @@ export default function Hero() {
           >
             Accéder à la plateforme
             <ArrowRight size={18} />
+          </Link>
+          <Link
+            href={ROUTES.PUBLIC_CREDIT_APPLICATION}
+            className="flex items-center gap-2 rounded-xl border border-[#0B63C7]/50 bg-[#0B63C7]/10 px-8 py-4 text-base font-medium text-[#8fc4ff] transition hover:bg-[#0B63C7]/20"
+          >
+            Demander un crédit
+            <FileText size={18} />
           </Link>
           <a
             href="#features"

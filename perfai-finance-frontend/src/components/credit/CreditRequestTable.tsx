@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { CreditCard, Search, SlidersHorizontal, X } from 'lucide-react'
+import { CreditCard, FileUp, Search, SlidersHorizontal, X } from 'lucide-react'
 import CreditStatusBadge from './CreditStatusBadge'
 import RiskLevelBadge from './RiskLevelBadge'
 import Modal from '@/components/shared/Modal'
@@ -14,6 +14,8 @@ import { getAllRiskAnalyses } from '@/services/riskService'
 import { RiskAnalysis } from '@/types/analysis'
 import { formatCurrency } from '@/utils/formatters'
 import RequestError from '@/components/shared/RequestError'
+import { DOCUMENT_TYPE_LABELS, DOCUMENT_TYPES, type DocumentType } from '@/types/document'
+import { uploadClientDocument } from '@/services/documentService'
 
 const STATUS_LABELS: Record<string, string> = {
   pending: 'En attente',
@@ -47,6 +49,8 @@ export default function CreditRequestTable() {
     duration_months: '',
     purpose: '',
   })
+  const [documents, setDocuments] = useState<Partial<Record<DocumentType, File[]>>>({})
+  const [consentConfirmed, setConsentConfirmed] = useState(false)
 
   useEffect(() => {
     void getAllRiskAnalyses().then(setAnalyses).catch(() => setAnalyses([]))
@@ -85,15 +89,27 @@ export default function CreditRequestTable() {
     setSubmitError(null)
     setSubmitting(true)
     try {
-      await addRequest({
+      const request = await addRequest({
         client_id: form.client_id,
         amount: Number(form.amount),
         duration_months: form.duration_months ? Number(form.duration_months) : undefined,
         purpose: form.purpose || undefined,
         status: 'pending',
       })
+      const selectedDocuments = Object.entries(documents).flatMap(([documentType, files]) => (files ?? []).map(file => ({ documentType: documentType as DocumentType, file })))
+      if (selectedDocuments.length > 0) {
+        await Promise.all(selectedDocuments.map(({ documentType, file }) => uploadClientDocument({
+          clientId: request.client_id,
+          creditRequestId: request.id,
+          documentType,
+          file,
+          consentConfirmed,
+        })))
+      }
       closeCreate()
       setForm({ client_id: '', amount: '', duration_months: '', purpose: '' })
+      setDocuments({})
+      setConsentConfirmed(false)
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'La demande n’a pas pu être créée.')
     } finally {
@@ -270,6 +286,14 @@ export default function CreditRequestTable() {
               onChange={e => setForm(p => ({ ...p, purpose: e.target.value }))}
             />
           </div>
+          <fieldset className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+            <legend className="px-1 text-sm font-medium text-white">Documents justificatifs <span className="font-normal text-white/40">(facultatif)</span></legend>
+            <p className="mt-1 text-xs leading-relaxed text-white/50">Associez chaque fichier à son justificatif. Les quatre premières pièces sont recommandées pour une analyse plus fiable.</p>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              {DOCUMENT_TYPES.map(type => { const count = documents[type]?.length ?? 0; return <label key={type} className="flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-white/70 transition hover:bg-white/10"><FileUp size={14} className="text-[#4A9FFF]" /><span className="min-w-0 flex-1 truncate">{DOCUMENT_TYPE_LABELS[type]}</span>{count > 0 && <span className="text-green-300">{count}</span>}<input type="file" accept="application/pdf,image/jpeg,image/png" multiple className="sr-only" onChange={event => setDocuments(current => ({ ...current, [type]: Array.from(event.target.files ?? []) }))} /></label> })}
+            </div>
+            {Object.values(documents).some(files => files?.length) && <label className="mt-4 flex cursor-pointer items-start gap-2 text-xs leading-relaxed text-white/60"><input type="checkbox" checked={consentConfirmed} onChange={event => setConsentConfirmed(event.target.checked)} className="mt-0.5" /> Je confirme que le client a donné son consentement pour la collecte et l’utilisation de ces documents dans l’étude de crédit.</label>}
+          </fieldset>
           <div className="flex justify-end gap-3 border-t border-white/10 pt-4">
             <button
               type="button"
@@ -280,7 +304,7 @@ export default function CreditRequestTable() {
             </button>
             <button
               type="submit"
-              disabled={submitting || !form.client_id || !form.amount}
+              disabled={submitting || !form.client_id || !form.amount || (Object.values(documents).some(files => files?.length) && !consentConfirmed)}
               className="rounded-xl bg-[#0B63C7] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0954a8] disabled:opacity-50 cursor-pointer"
             >
               {submitting ? 'Création...' : 'Créer la demande'}

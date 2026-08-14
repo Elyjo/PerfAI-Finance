@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Users,
   CreditCard,
+  ClipboardCheck,
   ShieldAlert,
   ChevronLeft,
   ChevronRight,
@@ -19,6 +20,7 @@ const menuItems = [
   { label: 'Tableau de bord', icon: LayoutDashboard, href: ROUTES.DASHBOARD },
   { label: 'Clients', icon: Users, href: ROUTES.CLIENTS },
   { label: 'Demandes de crédit', icon: CreditCard, href: ROUTES.CREDIT_REQUESTS },
+  { label: 'Pré-demandes clients', icon: ClipboardCheck, href: ROUTES.CREDIT_APPLICATIONS },
   { label: 'Analyse des risques', icon: ShieldAlert, href: ROUTES.RISK_ANALYSIS },
 ]
 
