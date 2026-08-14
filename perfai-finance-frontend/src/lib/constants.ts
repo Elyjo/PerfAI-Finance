@@ -20,9 +20,11 @@ export const ALERT_SEVERITIES = {
 
 export const ROUTES = {
   HOME: '/',
+  PUBLIC_CREDIT_APPLICATION: '/demande-credit',
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
   CLIENTS: '/clients',
   CREDIT_REQUESTS: '/credit-requests',
+  CREDIT_APPLICATIONS: '/credit-applications',
   RISK_ANALYSIS: '/risk-analysis',
 } as const

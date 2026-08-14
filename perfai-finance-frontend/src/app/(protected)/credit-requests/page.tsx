@@ -48,17 +48,17 @@ export default function CreditRequestsPage() {
         </div>
       </div>
 
-      <Link href="/credit-requests?create=1" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#0B63C7] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0954a8]">
+      <CreditRequestKpis />
+
+      <Link href="/credit-requests?create=1" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#0B63C7] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0954a8]">
         <Plus size={17} />
         Nouvelle demande
       </Link>
 
-      <CreditRequestKpis />
-
       {/* Content */}
       <div
         className="
-          mt-6
+          mt-4
           grid
           gap-6
           lg:grid-cols-[minmax(0,1fr)_20rem]

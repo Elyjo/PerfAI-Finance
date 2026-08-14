@@ -1,178 +1,35 @@
-import { Client } from '@/types/client'
-import { CreditRequest } from '@/types/credit'
+import type { Client } from '@/types/client'
+import type { CreditRequest } from '@/types/credit'
+import type { DocumentType } from '@/types/document'
 
 export type RiskLevel = 'Faible' | 'Moyen' | 'Élevé'
 
 export type ScoringResult = {
-  score: number
-  riskLevel: RiskLevel
-  recommendation: string
-  explanation: string
-  details: {
-    stabilityPoints: number
-    experiencePoints: number
-    incomePoints: number
-    debtPenalty: number
-    amountRatioPoints: number
-  }
+  score: number; riskLevel: RiskLevel; confidence: number; recommendation: string; explanation: string; missingDocuments: DocumentType[]
+  details: { repaymentCapacity: number; amountToIncome: number; businessStability: number; dataQuality: number; documentCoverage: number }
 }
 
-/**
- * Calcule le score de risque pour une demande de crédit
- * Score sur 100 — Plus c'est élevé, moins c'est risqué
- */
-export const calculateScore = (client: Client, request: CreditRequest): ScoringResult => {
-  if (!Number.isFinite(request.amount) || request.amount <= 0) {
-    throw new Error('Le montant de la demande doit être supérieur à zéro.')
-  }
-  if (request.duration_months !== undefined && (!Number.isFinite(request.duration_months) || request.duration_months <= 0)) {
-    throw new Error('La durée de la demande doit être supérieure à zéro.')
-  }
+const requiredDocuments: DocumentType[] = ['identity', 'address_proof', 'income_proof', 'bank_statement']
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, Math.round(value)))
 
-  let score = 50
-  const details = {
-    stabilityPoints: 0,
-    experiencePoints: 0,
-    incomePoints: 0,
-    debtPenalty: 0,
-    amountRatioPoints: 0
-  }
-
-  // 1. Stabilité de l'activité
-  if (client.business_age && client.business_age >= 5) {
-    details.stabilityPoints = 20
-    score += 20
-  } else if (client.business_age && client.business_age >= 3) {
-    details.stabilityPoints = 15
-    score += 15
-  } else if (client.business_age && client.business_age >= 1) {
-    details.stabilityPoints = 8
-    score += 8
-  }
-
-  // 2. Ancienneté / expérience
-  if (client.business_age && client.business_age >= 5) {
-    details.experiencePoints = 15
-    score += 15
-  } else if (client.business_age && client.business_age >= 3) {
-    details.experiencePoints = 10
-    score += 10
-  } else if (client.business_age && client.business_age >= 1) {
-    details.experiencePoints = 5
-    score += 5
-  }
-
-  // 3. Ratio revenus / mensualité
-  if (client.monthly_income && request.amount) {
-    const monthlyPayment = request.amount / (request.duration_months || 12)
-    const ratio = monthlyPayment / client.monthly_income
-
-    if (ratio < 0.3) {
-      details.incomePoints = 20
-      score += 20
-    } else if (ratio < 0.5) {
-      details.incomePoints = 10
-      score += 10
-    } else if (ratio < 0.7) {
-      details.incomePoints = 5
-      score += 5
-    } else {
-      details.incomePoints = -10
-      score -= 10
-    }
-  }
-
-  // 4. Pénalité si montant > 12x revenus mensuels
-  if (client.monthly_income && request.amount && request.amount > client.monthly_income * 12) {
-    details.debtPenalty = -20
-    score -= 20
-  }
-
-  // 5. Ratio montant/revenu annuel
-  if (client.monthly_income && request.amount) {
-    const annualIncome = client.monthly_income * 12
-    const ratio2 = request.amount / annualIncome
-    if (ratio2 > 1.5) {
-      details.amountRatioPoints = -15
-      score -= 15
-    } else if (ratio2 > 1) {
-      details.amountRatioPoints = -5
-      score -= 5
-    } else {
-      details.amountRatioPoints = 5
-      score += 5
-    }
-  }
-
-  // Limiter le score entre 0 et 100
-  score = Math.max(0, Math.min(100, Math.round(score)))
-
-  // Déterminer le niveau de risque
-  let riskLevel: RiskLevel
-  if (score >= 70) {
-    riskLevel = 'Faible'
-  } else if (score >= 45) {
-    riskLevel = 'Moyen'
-  } else {
-    riskLevel = 'Élevé'
-  }
-
-  // Générer la recommandation
-  let recommendation: string
-  if (riskLevel === 'Faible') {
-    recommendation = 'CREDIT RECOMMANDE'
-  } else if (riskLevel === 'Moyen') {
-    recommendation = 'CREDIT A EVALUER'
-  } else {
-    recommendation = 'CREDIT NON RECOMMANDE'
-  }
-
-  // Générer l'explication
-  const explanation = generateExplanation(client, request, score, riskLevel)
-
-  return { score, riskLevel, recommendation, explanation, details }
-}
-
-/**
- * IA Explicative — Génère une explication en langage naturel
- */
-const generateExplanation = (
-  client: Client,
-  request: CreditRequest,
-  score: number,
-  riskLevel: RiskLevel
-): string => {
-  const parts: string[] = []
-
-  // Analyse de l'activité
-  if (client.business_age && client.business_age > 3) {
-    parts.push(`Activite stable depuis ${client.business_age} ans`)
-  } else if (client.business_age && client.business_age > 1) {
-    parts.push(`Activite recente (${client.business_age} an(s))`)
-  } else {
-    parts.push(`Activite trop recente`)
-  }
-
-  // Analyse des revenus
-  if (client.monthly_income) {
-    parts.push(`Revenus mensuels de ${client.monthly_income.toLocaleString()} FCFA`)
-  }
-
-  // Ratio d'endettement
-  if (client.monthly_income && request.amount) {
-    const monthlyPayment = request.amount / (request.duration_months || 12)
-    const ratio = Math.round((monthlyPayment / client.monthly_income) * 100)
-    if (ratio < 30) {
-      parts.push(`Mensualite (${ratio}% des revenus) tres soutenable`)
-    } else if (ratio < 50) {
-      parts.push(`Mensualite (${ratio}% des revenus) acceptable`)
-    } else {
-      parts.push(`Mensualite (${ratio}% des revenus) trop elevee`)
-    }
-  }
-
-  // Conclusion
-  parts.push(`Score final : ${score}/100 - Niveau de risque : ${riskLevel}`)
-
-  return parts.join(' | ')
+/** Aide explicable à la pré-instruction : la décision finale reste celle de l’agent. */
+export const calculateScore = (client: Client, request: CreditRequest, documentTypes: DocumentType[] = []): ScoringResult => {
+  if (!Number.isFinite(request.amount) || request.amount <= 0) throw new Error('Le montant de la demande doit être supérieur à zéro.')
+  if (request.duration_months !== undefined && (!Number.isFinite(request.duration_months) || request.duration_months <= 0)) throw new Error('La durée de la demande doit être supérieure à zéro.')
+  const income = client.monthly_income ?? 0; const duration = request.duration_months ?? 12; const payment = request.amount / duration
+  const paymentRatio = income > 0 ? payment / income : null; const annualAmountRatio = income > 0 ? request.amount / (income * 12) : null
+  const missingDocuments = requiredDocuments.filter(type => !documentTypes.includes(type))
+  const repaymentCapacity = paymentRatio === null ? -18 : paymentRatio <= .25 ? 28 : paymentRatio <= .35 ? 20 : paymentRatio <= .5 ? 8 : paymentRatio <= .65 ? -8 : -25
+  const amountToIncome = annualAmountRatio === null ? -12 : annualAmountRatio <= .5 ? 15 : annualAmountRatio <= 1 ? 8 : annualAmountRatio <= 1.5 ? -4 : annualAmountRatio <= 2 ? -12 : -22
+  const age = client.business_age ?? 0; const businessStability = age >= 5 ? 15 : age >= 3 ? 10 : age >= 1 ? 4 : -8
+  const dataFields = [client.phone, client.location, client.activity, client.monthly_income, client.business_age, request.duration_months, request.purpose]
+  const dataQuality = Math.round((dataFields.filter(Boolean).length / dataFields.length) * 10) - 3
+  const documentCoverage = documentTypes.length === 0 ? -5 : missingDocuments.length === 0 ? 5 : Math.max(-3, 3 - missingDocuments.length * 2)
+  const score = clamp(55 + repaymentCapacity + amountToIncome + businessStability + dataQuality + documentCoverage, 0, 100)
+  const confidence = clamp(35 + dataFields.filter(Boolean).length * 5 + (requiredDocuments.length - missingDocuments.length) * 7 + Math.min(documentTypes.length, 6) * 2, 20, 100)
+  const riskLevel: RiskLevel = score >= 72 ? 'Faible' : score >= 50 ? 'Moyen' : 'Élevé'
+  const recommendation = riskLevel === 'Faible' && confidence >= 70 ? 'CRÉDIT RECOMMANDÉ SOUS RÉSERVE DE VÉRIFICATION' : riskLevel === 'Élevé' ? 'CRÉDIT NON RECOMMANDÉ — RÉEXAMEN MANUEL REQUIS' : 'À ÉVALUER PAR L’AGENT / COMITÉ DE CRÉDIT'
+  const capacityText = paymentRatio === null ? 'La capacité de remboursement ne peut pas être calculée faute de revenu mensuel.' : `La mensualité estimée représente ${Math.round(paymentRatio * 100)} % des revenus déclarés.`
+  const documentText = missingDocuments.length ? `${missingDocuments.length} justificatif(s) essentiel(s) manquent.` : 'Les justificatifs essentiels sont présents, sous réserve de contrôle par l’agent.'
+  return { score, riskLevel, confidence, recommendation, missingDocuments, explanation: `${capacityText} Activité déclarée depuis ${age || 0} an(s). ${documentText} Score ${score}/100, confiance ${confidence} %.`, details: { repaymentCapacity, amountToIncome, businessStability, dataQuality, documentCoverage } }
 }

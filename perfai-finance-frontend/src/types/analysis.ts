@@ -5,5 +5,8 @@ export type RiskAnalysis = {
   risk_level: 'Faible' | 'Moyen' | 'Élevé'
   recommendation?: string
   explanation?: string
+  confidence?: number
+  missing_documents?: string[]
+  score_details?: Record<string, number>
   created_at: string
 }

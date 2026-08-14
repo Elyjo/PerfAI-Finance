@@ -3,6 +3,8 @@
 import { useCallback, useState } from 'react'
 import { RiskAnalysis } from '@/types/analysis'
 import { analyzeCreditRequest, getRiskAnalysis } from '@/services/riskService'
+import { analyzePublicCreditApplication } from '@/services/riskService'
+import type { CreditApplication } from '@/types/application'
 import { generateRiskAlerts } from '@/services/alertService'
 import { getRequestErrorMessage } from '@/utils/formatters'
 
@@ -41,5 +43,25 @@ export function useRiskAnalysis() {
     }
   }, [])
 
-  return { analysis, loading, error, analyze, fetchAnalysis }
+  const analyzeApplication = useCallback(async (application: CreditApplication) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const result = await analyzePublicCreditApplication(application)
+      setAnalysis(result)
+      return result
+    } catch (error) {
+      setError(getRequestErrorMessage(error))
+      return null
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const clearAnalysis = useCallback(() => {
+    setAnalysis(null)
+    setError(null)
+  }, [])
+
+  return { analysis, loading, error, analyze, analyzeApplication, fetchAnalysis, clearAnalysis }
 }

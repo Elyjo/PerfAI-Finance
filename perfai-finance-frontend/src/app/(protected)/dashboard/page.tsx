@@ -2,7 +2,6 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import Link from "next/link"
 import AiCreditInsights from "@/components/dashboard/AiCreditInsights"
 import RiskTrendChart from "@/components/dashboard/RiskTrendChart"
 import SmartAlertsCard from "@/components/dashboard/SmartAlertsCard"
@@ -81,27 +80,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <Link
-          href="/credit-requests?create=1"
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-xl
-            bg-[#0B63C7]
-            px-5
-            py-2
-            text-sm
-            font-semibold
-            text-white
-            transition
-            hover:bg-[#0954a8]
-            cursor-pointer
-          "
-        >
-          <span className="text-lg">+</span>
-          Nouvelle demande
-        </Link>
       </div>
 
       {error && <RequestError message={error} onRetry={loadStats} />}

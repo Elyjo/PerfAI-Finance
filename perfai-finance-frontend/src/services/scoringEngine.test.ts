@@ -29,6 +29,21 @@ describe('calculateScore', () => {
     expect(result.riskLevel).toBe('Faible')
   })
 
+  it('augmente la confiance lorsque les justificatifs essentiels sont présents', () => {
+    const withoutDocuments = calculateScore(client, request())
+    const withDocuments = calculateScore(client, request(), ['identity', 'address_proof', 'income_proof', 'bank_statement'])
+
+    expect(withDocuments.confidence).toBeGreaterThan(withoutDocuments.confidence)
+    expect(withDocuments.missingDocuments).toEqual([])
+  })
+
+  it('signale les justificatifs manquants sans empêcher une pré-analyse', () => {
+    const result = calculateScore(client, request(), ['identity'])
+
+    expect(result.missingDocuments).toContain('bank_statement')
+    expect(result.confidence).toBeLessThan(100)
+  })
+
   it('pénalise un montant trop élevé au regard des revenus', () => {
     const result = calculateScore(client, request({ amount: 8_000_000 }))
 

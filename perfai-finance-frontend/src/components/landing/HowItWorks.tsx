@@ -1,5 +1,0 @@
-const steps = [['01', 'Créez le profil', 'Centralisez l’activité, les revenus et les informations clés du demandeur.'], ['02', 'Analysez la demande', 'Renseignez le montant, la durée et le motif du financement.'], ['03', 'Décidez en confiance', 'Examinez le score, les alertes et la recommandation avant validation.']]
-
-export default function HowItWorks() {
-  return <section id="how-it-works" className="bg-[#061126] px-6 py-24"><div className="mx-auto max-w-6xl"><div className="text-center"><p className="text-sm font-semibold uppercase tracking-widest text-[#4A9FFF]">Simple et rapide</p><h2 className="mt-4 text-4xl font-bold text-white">Comment ça fonctionne ?</h2></div><div className="mt-14 grid gap-6 md:grid-cols-3">{steps.map(([number, title, text]) => <article key={number} className="rounded-2xl border border-white/10 bg-[#020617]/50 p-7"><span className="text-5xl font-bold text-[#0B63C7]/40">{number}</span><h3 className="mt-8 text-lg font-semibold text-white">{title}</h3><p className="mt-3 text-sm leading-relaxed text-white/60">{text}</p></article>)}</div></div></section>
-}
