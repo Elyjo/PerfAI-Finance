@@ -25,8 +25,9 @@ export const calculateScore = (client: Client, request: CreditRequest, documentT
   const dataFields = [client.phone, client.location, client.activity, client.monthly_income, client.business_age, request.duration_months, request.purpose]
   const dataQuality = Math.round((dataFields.filter(Boolean).length / dataFields.length) * 10) - 3
   const documentCoverage = documentTypes.length === 0 ? -5 : missingDocuments.length === 0 ? 5 : Math.max(-3, 3 - missingDocuments.length * 2)
-  const score = clamp(55 + repaymentCapacity + amountToIncome + businessStability + dataQuality + documentCoverage, 0, 100)
-  const confidence = clamp(35 + dataFields.filter(Boolean).length * 5 + (requiredDocuments.length - missingDocuments.length) * 7 + Math.min(documentTypes.length, 6) * 2, 20, 100)
+  // Un score de pré-instruction conserve toujours une marge d'incertitude humaine.
+  const score = clamp(55 + repaymentCapacity + amountToIncome + businessStability + dataQuality + documentCoverage, 0, 95)
+  const confidence = clamp(35 + dataFields.filter(Boolean).length * 5 + (requiredDocuments.length - missingDocuments.length) * 7 + Math.min(documentTypes.length, 6) * 2, 20, 90)
   const riskLevel: RiskLevel = score >= 72 ? 'Faible' : score >= 50 ? 'Moyen' : 'Élevé'
   const recommendation = riskLevel === 'Faible' && confidence >= 70 ? 'CRÉDIT RECOMMANDÉ SOUS RÉSERVE DE VÉRIFICATION' : riskLevel === 'Élevé' ? 'CRÉDIT NON RECOMMANDÉ — RÉEXAMEN MANUEL REQUIS' : 'À ÉVALUER PAR L’AGENT / COMITÉ DE CRÉDIT'
   const capacityText = paymentRatio === null ? 'La capacité de remboursement ne peut pas être calculée faute de revenu mensuel.' : `La mensualité estimée représente ${Math.round(paymentRatio * 100)} % des revenus déclarés.`

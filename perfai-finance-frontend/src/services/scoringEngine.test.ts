@@ -26,6 +26,8 @@ describe('calculateScore', () => {
     const result = calculateScore(client, request())
 
     expect(result.score).toBeGreaterThanOrEqual(70)
+    expect(result.score).toBeLessThanOrEqual(95)
+    expect(result.confidence).toBeLessThanOrEqual(90)
     expect(result.riskLevel).toBe('Faible')
   })
 

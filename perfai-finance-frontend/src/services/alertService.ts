@@ -116,7 +116,7 @@ export const deleteAlertsByClient = async (clientId: string): Promise<boolean> =
 // CREATE — Générer des alertes automatiques
 // après une analyse de risque
 // ============================================
-export const generateRiskAlerts = async (clientId: string, riskLevel: string, score: number): Promise<void> => {
+export const generateRiskAlerts = async (clientId: string, riskLevel: string, score: number, confidence?: number, missingDocuments: string[] = []): Promise<void> => {
   const alerts: CreateAlertInput[] = []
 
   if (riskLevel === 'Élevé') {
@@ -146,9 +146,27 @@ export const generateRiskAlerts = async (clientId: string, riskLevel: string, sc
     })
   }
 
+  if (missingDocuments.length > 0) {
+    alerts.push({
+      client_id: clientId,
+      type: 'missing_documents',
+      message: `${missingDocuments.length} justificatif(s) essentiel(s) manquent. Compléter le dossier avant décision finale.`,
+      severity: 'warning',
+    })
+  }
+
+  if (confidence !== undefined && confidence < 60) {
+    alerts.push({
+      client_id: clientId,
+      type: 'low_confidence',
+      message: `Confiance d’analyse limitée (${confidence} %). Vérification manuelle renforcée recommandée.`,
+      severity: 'warning',
+    })
+  }
+
   // Une réanalyse remplace les alertes de risque précédentes du client :
   // cela évite d'empiler des alertes identiques à chaque recalcul.
-  const riskAlertTypes = ['risk_high', 'risk_medium', 'low_risk_good']
+  const riskAlertTypes = ['risk_high', 'risk_medium', 'low_risk_good', 'missing_documents', 'low_confidence']
   const { error } = await supabase
     .from('alerts')
     .delete()

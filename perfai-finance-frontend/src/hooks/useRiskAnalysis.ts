@@ -18,7 +18,7 @@ export function useRiskAnalysis() {
     setError(null)
     try {
       const result = await analyzeCreditRequest(requestId)
-      await generateRiskAlerts(clientId, result.risk_level, result.score)
+      await generateRiskAlerts(clientId, result.risk_level, result.score, result.confidence, result.missing_documents ?? [])
       setAnalysis(result)
       return result
     } catch (error) {

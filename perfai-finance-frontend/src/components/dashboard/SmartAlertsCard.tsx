@@ -7,6 +7,7 @@ import { Alert } from '@/types/alert'
 import { formatRelativeTime } from '@/utils/formatters'
 import { getRequestErrorMessage } from '@/utils/formatters'
 import RequestError from '@/components/shared/RequestError'
+import AiAlertTriage from './AiAlertTriage'
 
 const styles = {
   critical: 'bg-red-500/5 text-red-400',
@@ -29,6 +30,7 @@ export default function SmartAlertsCard() {
     <div className="rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:border-[#0B63C7]/30">
       <h3 className="text-lg font-semibold text-white">Alertes intelligentes</h3>
       {error ? <RequestError message={error} onRetry={loadAlerts} /> :
+      <>
       <div className="mt-6 flex flex-col gap-4">
         {alerts.length === 0 ? (
           <p className="rounded-xl bg-white/5 p-4 text-sm text-white/50">Aucune alerte récente.</p>
@@ -39,6 +41,8 @@ export default function SmartAlertsCard() {
           </div>
         ))}
       </div>
+      <AiAlertTriage alerts={alerts} />
+      </>
       }
     </div>
   )

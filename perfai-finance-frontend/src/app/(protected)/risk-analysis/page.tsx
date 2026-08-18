@@ -12,6 +12,7 @@ import { formatCurrency, formatDate } from '@/utils/formatters'
 import RequestError from '@/components/shared/RequestError'
 import { getCreditApplications } from '@/services/applicationService'
 import type { CreditApplication } from '@/types/application'
+import AiCreditAdvice from '@/components/analysis/AiCreditAdvice'
 
 export default function RiskAnalysisPage() {
   const { requests, loading: requestsLoading, error: requestsError, refresh: refreshRequests } = useCreditRequests()
@@ -41,6 +42,18 @@ export default function RiskAnalysisPage() {
   const currentLabel = selectedApplication ? 'pré-demande client' : 'demande interne'
   const loadingData = requestsLoading || clientsLoading
   const dataError = requestsError ?? clientsError ?? applicationsError
+  const aiPayload = analysis && (selectedRequest || selectedApplication) ? {
+    score: analysis.score,
+    riskLevel: analysis.risk_level,
+    confidence: analysis.confidence ?? 20,
+    amount: selectedRequest?.amount ?? selectedApplication?.requested_amount ?? 0,
+    durationMonths: selectedRequest?.duration_months ?? selectedApplication?.duration_months,
+    monthlyIncome: selectedClient?.monthly_income ?? selectedApplication?.monthly_income,
+    businessAge: selectedClient?.business_age ?? selectedApplication?.business_age,
+    activity: selectedClient?.activity ?? selectedApplication?.activity,
+    purpose: selectedRequest?.purpose ?? selectedApplication?.purpose,
+    missingDocuments: analysis.missing_documents ?? [],
+  } : null
 
   return <section className="min-h-screen px-4 py-6 sm:px-6 lg:px-12 lg:py-10">
     <div><h1 className="text-3xl font-bold text-white sm:text-4xl">Analyse des risques</h1><p className="mt-3 text-white/60">Analysez les demandes créées par un agent ou les pré-demandes reçues depuis le formulaire client.</p></div>
@@ -53,6 +66,6 @@ export default function RiskAnalysisPage() {
       </>}{error && <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">{error}</p>}</div>
       {analysis ? <RiskScore score={analysis.score} level={analysis.risk_level} confidence={analysis.confidence} /> : <div className="flex min-h-52 flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-6 text-center"><Brain size={28} className="text-[#0B63C7]" /><p className="mt-3 font-medium text-white/70">Résultat de l’analyse</p><p className="mt-1 text-sm text-white/40">Choisissez un dossier pour afficher son score.</p></div>}
     </div>
-    {analysis && <div className="mt-6 grid gap-6 lg:grid-cols-2"><article className="rounded-2xl border border-white/10 bg-white/3 p-6 backdrop-blur-xl"><div className="flex items-center gap-3"><ShieldCheck className="text-[#0B63C7]" /><h2 className="text-lg font-semibold text-white">Recommandation</h2></div><p className="mt-5 text-xl font-semibold text-white">{analysis.recommendation ?? 'Analyse disponible'}</p><p className="mt-3 leading-relaxed text-white/60">{analysis.explanation ?? 'Aucune explication enregistrée.'}</p></article>{analysis.missing_documents && analysis.missing_documents.length > 0 && <article className="rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] p-6"><h2 className="text-lg font-semibold text-amber-200">Éléments à vérifier</h2><p className="mt-3 text-sm text-white/60">Justificatifs manquants : {analysis.missing_documents.map(type => DOCUMENT_TYPE_LABELS[type as keyof typeof DOCUMENT_TYPE_LABELS] ?? type).join(', ')}.</p></article>}<article className="rounded-2xl border border-white/10 bg-white/3 p-6 backdrop-blur-xl"><div className="flex items-center gap-3"><FileSearch className="text-[#0B63C7]" /><h2 className="text-lg font-semibold text-white">Traçabilité</h2></div><p className="mt-5 text-sm text-white/60">Analyse générée le {formatDate(analysis.created_at)} pour le dossier sélectionné.</p></article></div>}
+    {analysis && <div className="mt-6 grid gap-6 lg:grid-cols-2"><article className="rounded-2xl border border-white/10 bg-white/3 p-6 backdrop-blur-xl"><div className="flex items-center gap-3"><ShieldCheck className="text-[#0B63C7]" /><h2 className="text-lg font-semibold text-white">Recommandation</h2></div><p className="mt-5 text-xl font-semibold text-white">{analysis.recommendation ?? 'Analyse disponible'}</p><p className="mt-3 leading-relaxed text-white/60">{analysis.explanation ?? 'Aucune explication enregistrée.'}</p></article>{analysis.missing_documents && analysis.missing_documents.length > 0 && <article className="rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] p-6"><h2 className="text-lg font-semibold text-amber-200">Éléments à vérifier</h2><p className="mt-3 text-sm text-white/60">Justificatifs manquants : {analysis.missing_documents.map(type => DOCUMENT_TYPE_LABELS[type as keyof typeof DOCUMENT_TYPE_LABELS] ?? type).join(', ')}.</p></article>}<article className="rounded-2xl border border-white/10 bg-white/3 p-6 backdrop-blur-xl"><div className="flex items-center gap-3"><FileSearch className="text-[#0B63C7]" /><h2 className="text-lg font-semibold text-white">Traçabilité</h2></div><p className="mt-5 text-sm text-white/60">Analyse générée le {formatDate(analysis.created_at)} pour le dossier sélectionné.</p></article>{aiPayload && <AiCreditAdvice payload={aiPayload} />}</div>}
   </section>
 }
