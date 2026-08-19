@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { Plus } from "lucide-react";
 import CreditRequestTable from "@/components/credit/CreditRequestTable";
 import CreditRequestKpis from "@/components/credit/CreditRequestKpis";
 import RecentCreditActivityCard from "@/components/credit/RiskCreditActivityCard";
@@ -49,11 +47,6 @@ export default function CreditRequestsPage() {
       </div>
 
       <CreditRequestKpis />
-
-      <Link href="/credit-requests?create=1" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#0B63C7] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0954a8]">
-        <Plus size={17} />
-        Nouvelle demande
-      </Link>
 
       {/* Content */}
       <div

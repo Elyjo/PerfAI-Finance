@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { CreditCard, FileUp, Search, SlidersHorizontal, X } from 'lucide-react'
+import Link from 'next/link'
+import { CreditCard, FileUp, Plus, Search, SlidersHorizontal, X } from 'lucide-react'
 import CreditStatusBadge from './CreditStatusBadge'
 import RiskLevelBadge from './RiskLevelBadge'
 import Modal from '@/components/shared/Modal'
@@ -130,6 +131,10 @@ export default function CreditRequestTable() {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
           <h2 className="text-lg font-semibold text-white">Demandes de crédit</h2>
+          <Link href="/credit-requests?create=1" className="inline-flex items-center gap-2 rounded-xl bg-[#0B63C7] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0954a8]">
+            <Plus size={16} />
+            Nouvelle demande
+          </Link>
         </div>
 
         {/* Content */}

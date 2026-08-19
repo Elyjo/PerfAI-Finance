@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Pencil, Search, SlidersHorizontal, Trash2, Users, X } from 'lucide-react'
+import Link from 'next/link'
+import { Pencil, Search, SlidersHorizontal, Trash2, UserPlus, Users, X } from 'lucide-react'
 import ClientRiskBadge from './ClientRiskBadge'
 import Modal from '@/components/shared/Modal'
 import Loading from '@/components/shared/Loading'
@@ -194,6 +195,10 @@ export default function ClientTable() {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
           <h2 className="text-lg font-semibold text-white">Liste des clients</h2>
+          <Link href="/clients?create=1" className="inline-flex items-center gap-2 rounded-xl bg-[#0B63C7] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0954a8]">
+            <UserPlus size={16} />
+            Nouveau client
+          </Link>
         </div>
 
         {/* Content */}

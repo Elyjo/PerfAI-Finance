@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { UserPlus } from "lucide-react";
 import ClientTable from "@/components/clients/ClientTable";
 import ClientKpis from "@/components/clients/ClientKpis";
 import AiClientInsights from "@/components/clients/AiClientInsights";
@@ -49,11 +47,6 @@ export default function ClientsPage() {
       </div>
 
       <ClientKpis />
-
-      <Link href="/clients?create=1" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#0B63C7] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0954a8]">
-        <UserPlus size={17} />
-        Nouveau client
-      </Link>
 
       {/* Content */}
       <div
